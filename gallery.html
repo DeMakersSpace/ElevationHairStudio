@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery — Elevation Hair Studios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* Custom cursor */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
+    .cursor-dot {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      width: 8px; height: 8px;
+      background: #D4862A; border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
+    }
+    .cursor-ring {
+      position: fixed; top: 0; left: 0; z-index: 9998;
+      width: 32px; height: 32px;
+      border: 1.5px solid rgba(212,134,42,0.5); border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+    }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+    /* Floating book button */
+    .float-book {
+      position: fixed; bottom: 32px; right: 32px; z-index: 500;
+      background: #D4862A; color: #fff;
+      font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 13px 22px; text-decoration: none;
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s;
+      pointer-events: none;
+    }
+    .float-book.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .float-book:hover { background: #1A1714; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      color: #1A1714;
+      background: #EDEADC;
+      overflow-x: hidden;
+      line-height: 1.7;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* NAV */
+    .nav { position: sticky; top: 0; z-index: 200; background: #EDEADC; border-bottom: 1px solid rgba(0,0,0,0.07); display: flex; align-items: center; padding: 0 48px; height: 84px; }
+    .nav-logo { display: flex; align-items: center; flex-shrink: 0; text-decoration: none; }
+    .nav-logo img { height: 80px; width: auto; mix-blend-mode: multiply; }
+    .nav-links { flex: 1; display: flex; align-items: center; justify-content: center; gap: 36px; list-style: none; }
+    .nav-links a { font-size: 13px; font-weight: 400; letter-spacing: 0.07em; color: #1A1714; padding-bottom: 3px; transition: color 0.2s; }
+    .nav-links a:hover { color: #D4862A; }
+    .nav-links a.active { color: #D4862A; border-bottom: 1.5px solid #D4862A; }
+    .nav-actions { flex-shrink: 0; }
+    .nav-book { display: inline-block; font-family: 'Jost', sans-serif; font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #fff; background: #1A1714; padding: 10px 22px; transition: background 0.2s; }
+    .nav-book:hover { background: #D4862A; }
+
+    /* SHARED */
+    .section-eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #D4862A; margin-bottom: 8px; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .section-title.dark { color: #1A1714; }
+    .outline-btn { display: inline-block; font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #fff; border: 1px solid rgba(255,255,255,0.35); padding: 10px 22px; white-space: nowrap; transition: border-color 0.2s, color 0.2s; }
+    .outline-btn:hover { border-color: #D4862A; color: #D4862A; }
+
+    /* HERO */
+    .hero {
+      background: #2D2A27;
+      padding: 100px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 440px;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 0% 60%, rgba(212,134,42,0.09) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 60% at 85% 15%, rgba(212,134,42,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-left { position: relative; z-index: 1; }
+    .hero-eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #D4862A; margin-bottom: 20px; }
+    .hero-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 64px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+    .hero-right { position: relative; z-index: 1; display: flex; align-items: flex-start; }
+    .hero-desc {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 400;
+      font-style: italic;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.55;
+      border-left: 2px solid rgba(212,134,42,0.4);
+      padding-left: 24px;
+    }
+
+    /* GALLERY SECTION */
+    .gallery-section {
+      background: #2D2A27;
+      padding: 80px 48px 100px;
+    }
+    .gallery-header {
+      margin-bottom: 40px;
+    }
+    .gallery-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 8px;
+      margin-bottom: 32px;
+    }
+    .category-labels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 48px;
+    }
+    .cat-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: default;
+    }
+    .cat-label.active {
+      background: #D4862A;
+      color: #fff;
+    }
+    .cat-label.inactive {
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* GALLERY GRID — custom layout */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: 240px;
+      gap: 12px;
+    }
+    .gallery-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .gallery-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .gallery-card:hover img { transform: scale(1.04); }
+    .gallery-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      display: flex;
+      align-items: flex-end;
+      padding: 20px;
+      transition: background 0.3s ease;
+    }
+    .gallery-card:hover .gallery-card-overlay {
+      background: rgba(0,0,0,0.52);
+    }
+    .gallery-cat-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #fff;
+      background: #D4862A;
+      padding: 5px 13px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .gallery-card:hover .gallery-cat-badge {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Tall cards (2:3) — span 2 rows */
+    .card-tall { grid-row: span 2; }
+    /* Wide cards (3:2) — span 2 columns */
+    .card-wide { grid-column: span 2; }
+
+    /* Gallery hover overlay */
+    .gallery-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(212,134,42,0.6) 0%, rgba(0,0,0,0.4) 100%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .gallery-card:hover::after { opacity: 1; }
+
+    /* INSTAGRAM BAND */
+    .instagram-band {
+      background: #2D2A27;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 80px 48px;
+      text-align: center;
+    }
+    .ig-handle {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      margin: 8px 0 32px;
+    }
+    .ig-thumbs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+    .ig-thumb {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      opacity: 0.55;
+      transition: opacity 0.2s;
+    }
+    .ig-thumb:hover { opacity: 0.85; }
+
+    /* CTA */
+    .cta-section {
+      background: #2D2A27;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 88px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(212,134,42,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-inner { position: relative; z-index: 1; }
+    .cta-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 40px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 32px;
+    }
+
+    /* FOOTER */
+    .footer { background: #1A1714; padding: 60px 48px 32px; }
+    .footer-grid { display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+    .footer-logo { height: 42px; margin-bottom: 18px; filter: invert(1); }
+    .footer-desc { font-size: 13px; font-weight: 300; line-height: 1.75; color: rgba(255,255,255,0.45); max-width: 240px; }
+    .footer-col-title { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #D4862A; margin-bottom: 20px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li+li { margin-top: 10px; }
+    .footer-col ul a { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.5); transition: color 0.2s; }
+    .footer-col ul a:hover { color: #fff; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-copy { font-size: 11.5px; color: rgba(255,255,255,0.25); }
+    .footer-social { display: flex; gap: 20px; }
+    .footer-social a { font-size: 11.5px; font-weight: 500; letter-spacing: 0.06em; color: rgba(255,255,255,0.35); transition: color 0.2s; }
+    .footer-social a:hover { color: #D4862A; }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .nav { padding: 0 32px; }
+      .hero { padding: 80px 32px; gap: 48px; }
+      .hero-heading { font-size: 50px; }
+      .gallery-section { padding: 64px 32px 80px; }
+      .instagram-band { padding: 64px 32px; }
+      .cta-section { padding: 72px 32px; }
+      .footer { padding: 60px 32px 32px; }
+    }
+    @media (max-width: 768px) {
+      .nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .nav-actions { display: none; }
+      .nav-logo img { height: 48px; }
+      .nav { height: 64px; }
+      .hero { grid-template-columns: 1fr; gap: 36px; padding: 64px 24px; min-height: auto; }
+      .hero-heading { font-size: 40px; }
+      .gallery-section { padding: 56px 24px 64px; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
+      .card-wide { grid-column: span 2; }
+      .card-tall { grid-row: span 2; }
+      .instagram-band { padding: 56px 24px; }
+      .ig-handle { font-size: 22px; }
+      .ig-thumb { width: 88px; height: 88px; }
+      .cta-section { padding: 64px 24px; }
+      .cta-heading { font-size: 30px; }
+      .footer { padding: 48px 24px 28px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .hero-heading { font-size: 34px; }
+      .gallery-grid { grid-template-columns: 1fr; grid-auto-rows: 260px; }
+      .card-wide { grid-column: span 1; }
+      .card-tall { grid-row: span 1; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+    /* ─── Animated wavy underline ─── */
+    .hero-underline-wrap { position: relative; display: inline-block; }
+    .hero-underline-svg { position: absolute; bottom: -12px; left: -2%; width: 104%; height: 22px; overflow: visible; pointer-events: none; }
+    .hero-underline-path {
+      fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round;
+      stroke-dasharray: 350; stroke-dashoffset: 350; opacity: 0;
+      animation: drawHeroUnderline 1.5s ease-in-out var(--underline-delay, 0.8s) forwards;
+    }
+    @keyframes drawHeroUnderline {
+      from { stroke-dashoffset: 350; opacity: 0; }
+      to   { stroke-dashoffset: 0;   opacity: 1; }
+    }
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.028;
+      pointer-events: none;
+      z-index: 9990;
+      mix-blend-mode: multiply;
+    }
+    /* Hamburger + Mobile Nav */
+    .hamburger {
+      display: none; flex-direction: column; justify-content: center; gap: 5px;
+      padding: 6px; background: none; border: none; cursor: pointer; z-index: 300; margin-left: auto;
+    }
+    .hamburger span { display: block; width: 22px; height: 1.5px; background: #1A1714; transition: transform 0.25s ease, opacity 0.25s ease; }
+    .hamburger.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    @media (max-width: 768px) { .hamburger { display: flex; } }
+    @media (hover: none) and (pointer: coarse) {
+      .cursor-dot, .cursor-ring { display: none; }
+      *, *::before, *::after { cursor: auto !important; }
+    }
+    .mobile-nav {
+      position: fixed; inset: 0; z-index: 250;
+      background: #EDEADC;
+      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 36px;
+      opacity: 0; pointer-events: none; transform: translateY(-6px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .mobile-nav.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .mobile-nav a {
+      font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700;
+      color: #1A1714; letter-spacing: -0.01em; transition: color 0.2s;
+    }
+    .mobile-nav a:hover { color: #D4862A; }
+    .mobile-nav-close {
+      position: absolute; top: 28px; right: 32px; background: none; border: none;
+      font-size: 30px; color: #1A1714; cursor: pointer; transition: color 0.2s; line-height: 1;
+    }
+    .mobile-nav-close:hover { color: #D4862A; }
+    .mobile-nav-book {
+      font-family: 'Jost', sans-serif !important;
+      font-size: 11px !important; font-weight: 600 !important;
+      letter-spacing: 0.16em !important; text-transform: uppercase !important;
+      color: #fff !important; background: #1A1714 !important;
+      padding: 12px 28px !important; font-style: normal !important;
+      transition: background 0.2s !important;
+    }
+    .mobile-nav-book:hover { background: #D4862A !important; }
+  </style>
+</head>
+<body>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo" aria-label="Elevation Hair Studios – Home">
+      <img src="ElevationHairStudiosLogo.png" alt="Elevation Hair Studios">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="gallery.html" class="active">Gallery</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="book.html" class="nav-book">Book Online</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+<nav class="mobile-nav" id="mobileNav" role="dialog" aria-modal="true" aria-label="Site navigation">
+  <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">&times;</button>
+  <a href="index.html">Home</a>
+  <a href="services.html">Services</a>
+  <a href="about.html">About</a>
+  <a href="gallery.html" style="color:#D4862A;">Gallery</a>
+  <a href="contact.html">Contact</a>
+  <a href="book.html" class="mobile-nav-book">Book Online</a>
+</nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">The Work</div>
+      <h1 class="hero-heading">Fresh.<br>Every.<br><span class="hero-underline-wrap">Time.</span></h1>
+    </div>
+    <div class="hero-right">
+      <p class="hero-desc">A gallery of precision, style, and craft — from the chair to the door.</p>
+    </div>
+  </section>
+
+  <!-- GALLERY SECTION -->
+  <section class="gallery-section">
+    <div class="gallery-header">
+      <div class="section-eyebrow">Our Work</div>
+      <h2 class="gallery-title">The Portfolio</h2>
+      <div class="category-labels">
+        <span class="cat-label active">All Work</span>
+        <span class="cat-label inactive">Fades</span>
+        <span class="cat-label inactive">Skin Fades</span>
+        <span class="cat-label inactive">Beard Work</span>
+        <span class="cat-label inactive">Classic Cuts</span>
+      </div>
+    </div>
+
+    <div class="gallery-grid">
+      <!-- Row 1: tall | square | square -->
+      <div class="gallery-card card-tall reveal reveal-delay-1">
+        <img src="https://placehold.co/600x960/1A1714/555250" alt="Precision fade haircut by Elevation Hair Studios">
+        <div class="gallery-card-overlay">
+          <span class="gallery-cat-badge">Fade</span>
+        </div>
+      </div>
+      <div class="gallery-card reveal reveal-delay-2">
+        <img src="https://placehold.co/600x480/232120/666360" alt="Modern skin fade at Elevation Hair Studios">
+        <div class="gallery-card-overlay">
+          <span class="gallery-cat-badge">Skin Fade</span>
+        </div>
+      </div>
+      <div class="gallery-card reveal reveal-delay-3">
+        <img src="https://placehold.co/600x480/1A1714/555250" alt="Beard design and sculpting at Elevation Hair Studios">
+        <div class="gallery-card-overlay">
+          <span class="gallery-cat-badge">Beard Work</span>
+        </div>
+      </div>
+
+      <!-- Row 2: square | square | tall -->
+      <div class="gallery-card reveal reveal-delay-1">
+        <img src="https://placehold.co/600x480/232120/666360" alt="Classic scissor cut at Elevation Hair Studios">
+        <div class="gallery-card-overlay">
+          <span class="gallery-cat-badge">Classic Cut</span>
+        </div>
+      </div>
+      <div class="gallery-card reveal reveal-delay-2">
+        <img src="https://placehold.co/600x480/1A1714/555250" alt="Low fade haircut at Elevation Hair Studios">
+        <div class="gallery-card-overlay">
+          <span class="gallery-cat-badge">Fade</span>
+        </div>
+      </div>
+      <div class="gallery-card card-tall reveal reveal-delay-3">
+        <img src="https://placehold.co/600x960/232120/666360" alt="Full grooming experience at Elevation Hair Studios">
+        <div class="gallery-card-overlay">
+          <span class="gallery-cat-badge">Skin Fade</span>
+        </div>
+      </div>
+
+      <!-- Row 3: wide | square -->
+      <div class="gallery-card card-wide reveal reveal-delay-1">
+        <img src="https://placehold.co/1200x480/1A1714/555250" alt="Signature haircut and beard design at Elevation Hair Studios">
+        <div class="gallery-card-overlay">
+          <span class="gallery-cat-badge">Signature Cut + Beard</span>
+        </div>
+      </div>
+      <div class="gallery-card reveal reveal-delay-2">
+        <img src="https://placehold.co/600x480/232120/666360" alt="Textured crop haircut at Elevation Hair Studios">
+        <div class="gallery-card-overlay">
+          <span class="gallery-cat-badge">Classic Cut</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTAGRAM BAND -->
+  <section class="instagram-band">
+    <div class="section-eyebrow">Follow Our Work</div>
+    <h2 class="ig-handle">@lev.blendz on Instagram</h2>
+    <a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener" class="outline-btn">Follow Us</a>
+    <div class="ig-thumbs">
+      <img src="https://placehold.co/120x120/1A1714/555250" alt="Instagram preview 1" class="ig-thumb">
+      <img src="https://placehold.co/120x120/232120/666360" alt="Instagram preview 2" class="ig-thumb">
+      <img src="https://placehold.co/120x120/1A1714/555250" alt="Instagram preview 3" class="ig-thumb">
+      <img src="https://placehold.co/120x120/232120/666360" alt="Instagram preview 4" class="ig-thumb">
+      <img src="https://placehold.co/120x120/1A1714/555250" alt="Instagram preview 5" class="ig-thumb">
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <div class="section-eyebrow" style="margin-bottom:16px;">Your Turn</div>
+      <h2 class="cta-heading">Ready to Join<br>the Portfolio?</h2>
+      <a href="book.html" class="outline-btn">Book Appointment</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-grid">
+      <div>
+        <img src="ElevationHairStudiosLogo.png" alt="Elevation Hair Studios" class="footer-logo">
+        <p class="footer-desc">Premium cuts and precise shearing in the heart of West Singapore. Your barber, your community.</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Navigation</div>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="book.html">Book Online</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Contact</div>
+        <ul>
+          <li><a href="tel:88155167">8815 5167</a></li>
+          <li><a href="mailto:ElevationHairstudios@gmail.com">ElevationHairstudios@gmail.com</a></li>
+          <li><a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Visit Us</div>
+        <ul>
+          <li><a href="contact.html">68 Jln Jurong Kechil</a></li>
+          <li><a href="contact.html">#01-16, Singapore 596180</a></li>
+          <li><a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2025 Elevation Hair Studios Pte. Ltd. &nbsp;(202531488E)</span>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a>
+        <a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+    </div>
+  </footer>
+
+  <a href="book.html" class="float-book" id="floatBook">Book Now</a>
+
+<script>
+  // Hamburger / mobile nav
+  (function() {
+    var hamburger = document.getElementById('hamburger');
+    var mobileNav = document.getElementById('mobileNav');
+    var mobileNavClose = document.getElementById('mobileNavClose');
+    function toggleNav(open) {
+      mobileNav.classList.toggle('open', open);
+      hamburger.classList.toggle('active', open);
+      hamburger.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open ? 'hidden' : '';
+    }
+    hamburger.addEventListener('click', function() { toggleNav(true); });
+    mobileNavClose.addEventListener('click', function() { toggleNav(false); });
+    mobileNav.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', function() { toggleNav(false); }); });
+  })();
+  // Custom cursor
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.transform = `translate(${mx-4}px,${my-4}px)`; });
+  (function animRing() {
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.transform = `translate(${rx-16}px,${ry-16}px)`;
+    requestAnimationFrame(animRing);
+  })();
+  document.querySelectorAll('a, button, [role="button"]').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width = '48px'; ring.style.height = '48px'; ring.style.borderColor = '#D4862A'; });
+    el.addEventListener('mouseleave', () => { ring.style.width = '32px'; ring.style.height = '32px'; ring.style.borderColor = 'rgba(212,134,42,0.5)'; });
+  });
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Floating book button
+  const fb = document.getElementById('floatBook');
+  window.addEventListener('scroll', () => { fb.classList.toggle('show', window.scrollY > 300); });
+</script>
+<script src="animated-underline.js"></script>
+</body>
+</html>

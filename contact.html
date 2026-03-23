@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Elevation Hair Studios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* Custom cursor */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
+    .cursor-dot {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      width: 8px; height: 8px;
+      background: #D4862A; border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
+    }
+    .cursor-ring {
+      position: fixed; top: 0; left: 0; z-index: 9998;
+      width: 32px; height: 32px;
+      border: 1.5px solid rgba(212,134,42,0.5); border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+    }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+    /* Floating book button */
+    .float-book {
+      position: fixed; bottom: 32px; right: 32px; z-index: 500;
+      background: #D4862A; color: #fff;
+      font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 13px 22px; text-decoration: none;
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s;
+      pointer-events: none;
+    }
+    .float-book.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .float-book:hover { background: #1A1714; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      color: #1A1714;
+      background: #EDEADC;
+      overflow-x: hidden;
+      line-height: 1.7;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* NAV */
+    .nav { position: sticky; top: 0; z-index: 200; background: #EDEADC; border-bottom: 1px solid rgba(0,0,0,0.07); display: flex; align-items: center; padding: 0 48px; height: 84px; }
+    .nav-logo { display: flex; align-items: center; flex-shrink: 0; text-decoration: none; }
+    .nav-logo img { height: 80px; width: auto; mix-blend-mode: multiply; }
+    .nav-links { flex: 1; display: flex; align-items: center; justify-content: center; gap: 36px; list-style: none; }
+    .nav-links a { font-size: 13px; font-weight: 400; letter-spacing: 0.07em; color: #1A1714; padding-bottom: 3px; transition: color 0.2s; }
+    .nav-links a:hover { color: #D4862A; }
+    .nav-links a.active { color: #D4862A; border-bottom: 1.5px solid #D4862A; }
+    .nav-actions { flex-shrink: 0; }
+    .nav-book { display: inline-block; font-family: 'Jost', sans-serif; font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #fff; background: #1A1714; padding: 10px 22px; transition: background 0.2s; }
+    .nav-book:hover { background: #D4862A; }
+
+    /* SHARED */
+    .section-eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #D4862A; margin-bottom: 8px; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .section-title.dark { color: #1A1714; }
+    .outline-btn { display: inline-block; font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #fff; border: 1px solid rgba(255,255,255,0.35); padding: 10px 22px; white-space: nowrap; transition: border-color 0.2s, color 0.2s; }
+    .outline-btn:hover { border-color: #D4862A; color: #D4862A; }
+
+    /* HERO */
+    .hero {
+      background: #2D2A27;
+      padding: 100px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 440px;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 55% 80% at 8% 55%, rgba(212,134,42,0.09) 0%, transparent 65%),
+        radial-gradient(ellipse 35% 50% at 88% 20%, rgba(212,134,42,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-left { position: relative; z-index: 1; }
+    .hero-eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #D4862A; margin-bottom: 20px; }
+    .hero-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 64px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+    .hero-right { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
+    .hero-sub {
+      font-family: 'Playfair Display', serif;
+      font-size: 19px;
+      font-weight: 400;
+      font-style: italic;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.55;
+      border-left: 2px solid rgba(212,134,42,0.4);
+      padding-left: 24px;
+    }
+    .hero-pin {
+      width: 52px; height: 52px;
+      background: #D4862A;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* CONTACT CARDS */
+    .contact-cards-section {
+      background: #EDEADC;
+      padding: 80px 48px;
+    }
+    .contact-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .contact-card {
+      border: 1px solid rgba(0,0,0,0.08);
+      padding: 40px;
+      box-shadow: 0 2px 8px rgba(26,23,20,0.04);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s;
+    }
+    .contact-card:hover {
+      border-color: rgba(212,134,42,0.25);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    }
+    .contact-card-icon {
+      width: 44px; height: 44px;
+      background: #D4862A;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 24px;
+    }
+    .contact-card-icon svg { color: #fff; }
+    .contact-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #1A1714;
+      margin-bottom: 12px;
+    }
+    .contact-card-main {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #1A1714;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .contact-card-sub {
+      font-size: 13px;
+      font-weight: 300;
+      color: #6B6763;
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    .contact-card-link {
+      display: inline-block;
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #D4862A;
+      border-bottom: 1px solid rgba(212,134,42,0.3);
+      padding-bottom: 2px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .contact-card-link:hover { border-color: #D4862A; }
+
+    /* MAP SECTION */
+    .map-section {
+      background: #EDEADC;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    .map-label {
+      padding: 32px 48px 20px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #6B6763;
+    }
+    .map-label strong {
+      color: #1A1714;
+      font-weight: 600;
+    }
+    .map-embed { display: block; width: 100%; border: none; }
+
+    /* HOURS BAND */
+    .hours-band {
+      background: #2D2A27;
+      padding: 80px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hours-band::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 80% at 50% 50%, rgba(212,134,42,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hours-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hours-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: #fff;
+      margin: 8px 0 16px;
+    }
+    .hours-note {
+      font-size: 14px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+    .hours-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+    .wa-btn {
+      display: inline-block;
+      font-family: 'Jost', sans-serif;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #fff;
+      background: #D4862A;
+      padding: 12px 28px;
+      transition: background 0.2s;
+    }
+    .wa-btn:hover { background: #b84d22; }
+    .hours-phone {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+    }
+    .hours-phone a { color: rgba(255,255,255,0.65); transition: color 0.2s; }
+    .hours-phone a:hover { color: #D4862A; }
+    .hours-social {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 32px;
+    }
+    .hours-social a {
+      font-size: 11.5px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      transition: color 0.2s;
+    }
+    .hours-social a:hover { color: #D4862A; }
+
+    /* CTA */
+    .cta-section {
+      background: #2D2A27;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 88px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(212,134,42,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-inner { position: relative; z-index: 1; }
+    .cta-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 40px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 32px;
+    }
+
+    /* FOOTER */
+    .footer { background: #1A1714; padding: 60px 48px 32px; }
+    .footer-grid { display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+    .footer-logo { height: 42px; margin-bottom: 18px; filter: invert(1); }
+    .footer-desc { font-size: 13px; font-weight: 300; line-height: 1.75; color: rgba(255,255,255,0.45); max-width: 240px; }
+    .footer-col-title { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #D4862A; margin-bottom: 20px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li+li { margin-top: 10px; }
+    .footer-col ul a { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.5); transition: color 0.2s; }
+    .footer-col ul a:hover { color: #fff; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-copy { font-size: 11.5px; color: rgba(255,255,255,0.25); }
+    .footer-social { display: flex; gap: 20px; }
+    .footer-social a { font-size: 11.5px; font-weight: 500; letter-spacing: 0.06em; color: rgba(255,255,255,0.35); transition: color 0.2s; }
+    .footer-social a:hover { color: #D4862A; }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .nav { padding: 0 32px; }
+      .hero { padding: 80px 32px; gap: 48px; }
+      .hero-heading { font-size: 50px; }
+      .contact-cards-section { padding: 64px 32px; }
+      .map-label { padding: 28px 32px 16px; }
+      .hours-band { padding: 64px 32px; }
+      .cta-section { padding: 72px 32px; }
+      .footer { padding: 60px 32px 32px; }
+    }
+    @media (max-width: 768px) {
+      .nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .nav-actions { display: none; }
+      .nav-logo img { height: 48px; }
+      .nav { height: 64px; }
+      .hero { grid-template-columns: 1fr; gap: 36px; padding: 64px 24px; min-height: auto; }
+      .hero-heading { font-size: 40px; }
+      .contact-cards-section { padding: 56px 24px; }
+      .contact-cards { grid-template-columns: 1fr; gap: 20px; }
+      .map-label { padding: 24px 24px 14px; }
+      .hours-band { padding: 56px 24px; }
+      .hours-actions { flex-direction: column; gap: 12px; }
+      .cta-section { padding: 64px 24px; }
+      .cta-heading { font-size: 30px; }
+      .footer { padding: 48px 24px 28px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .hero-heading { font-size: 34px; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+    /* ─── Animated wavy underline ─── */
+    .hero-underline-wrap { position: relative; display: inline-block; }
+    .hero-underline-svg { position: absolute; bottom: -12px; left: -2%; width: 104%; height: 22px; overflow: visible; pointer-events: none; }
+    .hero-underline-path {
+      fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round;
+      stroke-dasharray: 350; stroke-dashoffset: 350; opacity: 0;
+      animation: drawHeroUnderline 1.5s ease-in-out var(--underline-delay, 0.8s) forwards;
+    }
+    @keyframes drawHeroUnderline {
+      from { stroke-dashoffset: 350; opacity: 0; }
+      to   { stroke-dashoffset: 0;   opacity: 1; }
+    }
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.028;
+      pointer-events: none;
+      z-index: 9990;
+      mix-blend-mode: multiply;
+    }
+    /* Hamburger + Mobile Nav */
+    .hamburger {
+      display: none; flex-direction: column; justify-content: center; gap: 5px;
+      padding: 6px; background: none; border: none; cursor: pointer; z-index: 300; margin-left: auto;
+    }
+    .hamburger span { display: block; width: 22px; height: 1.5px; background: #1A1714; transition: transform 0.25s ease, opacity 0.25s ease; }
+    .hamburger.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    @media (max-width: 768px) { .hamburger { display: flex; } }
+    @media (hover: none) and (pointer: coarse) {
+      .cursor-dot, .cursor-ring { display: none; }
+      *, *::before, *::after { cursor: auto !important; }
+    }
+    .mobile-nav {
+      position: fixed; inset: 0; z-index: 250;
+      background: #EDEADC;
+      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 36px;
+      opacity: 0; pointer-events: none; transform: translateY(-6px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .mobile-nav.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .mobile-nav a {
+      font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700;
+      color: #1A1714; letter-spacing: -0.01em; transition: color 0.2s;
+    }
+    .mobile-nav a:hover { color: #D4862A; }
+    .mobile-nav-close {
+      position: absolute; top: 28px; right: 32px; background: none; border: none;
+      font-size: 30px; color: #1A1714; cursor: pointer; transition: color 0.2s; line-height: 1;
+    }
+    .mobile-nav-close:hover { color: #D4862A; }
+    .mobile-nav-book {
+      font-family: 'Jost', sans-serif !important;
+      font-size: 11px !important; font-weight: 600 !important;
+      letter-spacing: 0.16em !important; text-transform: uppercase !important;
+      color: #fff !important; background: #1A1714 !important;
+      padding: 12px 28px !important; font-style: normal !important;
+      transition: background 0.2s !important;
+    }
+    .mobile-nav-book:hover { background: #D4862A !important; }
+  </style>
+</head>
+<body>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo" aria-label="Elevation Hair Studios – Home">
+      <img src="ElevationHairStudiosLogo.png" alt="Elevation Hair Studios">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="book.html" class="nav-book">Book Online</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+<nav class="mobile-nav" id="mobileNav" role="dialog" aria-modal="true" aria-label="Site navigation">
+  <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">&times;</button>
+  <a href="index.html">Home</a>
+  <a href="services.html">Services</a>
+  <a href="about.html">About</a>
+  <a href="gallery.html">Gallery</a>
+  <a href="contact.html" style="color:#D4862A;">Contact</a>
+  <a href="book.html" class="mobile-nav-book">Book Online</a>
+</nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Get in Touch</div>
+      <h1 class="hero-heading">Find Us<br><span class="hero-underline-wrap">Here.</span></h1>
+    </div>
+    <div class="hero-right">
+      <p class="hero-sub">We're always happy to help. Come find us in the heart of West Singapore.</p>
+      <div class="hero-pin" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT CARDS -->
+  <section class="contact-cards-section">
+    <div class="contact-cards">
+      <div class="contact-card reveal reveal-delay-1">
+        <div class="contact-card-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="contact-card-title">Visit Us</div>
+        <div class="contact-card-main">68 Jln Jurong Kechil<br>#01-16</div>
+        <div class="contact-card-sub">Singapore 596180<br>West Singapore — Bukit Timah / Jurong Kechil area</div>
+        <a href="https://maps.google.com/?q=68+Jalan+Jurong+Kechil+Singapore+596180" target="_blank" rel="noopener" class="contact-card-link">Get Directions</a>
+      </div>
+      <div class="contact-card reveal reveal-delay-2">
+        <div class="contact-card-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.34 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/>
+          </svg>
+        </div>
+        <div class="contact-card-title">Call or WhatsApp</div>
+        <div class="contact-card-main">8815 5167</div>
+        <div class="contact-card-sub">Prefer messaging? Reach us instantly on WhatsApp — we'll respond as soon as possible.</div>
+        <a href="https://wa.me/6588155167" target="_blank" rel="noopener" class="contact-card-link">WhatsApp Us</a>
+      </div>
+      <div class="contact-card reveal reveal-delay-3">
+        <div class="contact-card-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <div class="contact-card-title">Email Us</div>
+        <div class="contact-card-main" style="font-size:16px; word-break:break-all;">ElevationHairstudios<br>@gmail.com</div>
+        <div class="contact-card-sub">We'll get back to you as soon as possible.</div>
+        <a href="mailto:ElevationHairstudios@gmail.com" class="contact-card-link">Send an Email</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP SECTION -->
+  <section class="map-section">
+    <div class="map-label">
+      <strong>68 Jln Jurong Kechil, #01-16, Singapore 596180</strong> &nbsp;·&nbsp; West Singapore
+    </div>
+    <iframe
+      class="map-embed"
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.7234!2d103.7635!3d1.3407!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da0f2b49c78b03%3A0xf446e6b2e15d8b09!2s68%20Jln%20Jurong%20Kechil%2C%20Singapore%20596180!5e0!3m2!1sen!2ssg!4v1"
+      width="100%"
+      height="400"
+      style="border:0;"
+      allowfullscreen=""
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      title="Elevation Hair Studios location map">
+    </iframe>
+  </section>
+
+  <!-- HOURS BAND -->
+  <section class="hours-band">
+    <div class="hours-inner">
+      <div class="section-eyebrow">Opening Hours</div>
+      <h2 class="hours-title">When We're Open</h2>
+      <p class="hours-note">Hours may vary. Reach out to us directly to confirm current operating hours and availability before your visit.</p>
+      <div class="hours-actions">
+        <a href="https://wa.me/6588155167" target="_blank" rel="noopener" class="wa-btn">WhatsApp to Confirm Hours</a>
+        <span class="hours-phone">or call <a href="tel:88155167">8815 5167</a></span>
+      </div>
+      <div class="hours-social">
+        <a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a>
+        <a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <div class="section-eyebrow" style="margin-bottom:16px;">You're in the Right Place</div>
+      <h2 class="cta-heading">Ready to Book?</h2>
+      <a href="book.html" class="outline-btn">Book Appointment</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-grid">
+      <div>
+        <img src="ElevationHairStudiosLogo.png" alt="Elevation Hair Studios" class="footer-logo">
+        <p class="footer-desc">Premium cuts and precise shearing in the heart of West Singapore. Your barber, your community.</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Navigation</div>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="book.html">Book Online</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Contact</div>
+        <ul>
+          <li><a href="tel:88155167">8815 5167</a></li>
+          <li><a href="mailto:ElevationHairstudios@gmail.com">ElevationHairstudios@gmail.com</a></li>
+          <li><a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Visit Us</div>
+        <ul>
+          <li><a href="contact.html">68 Jln Jurong Kechil</a></li>
+          <li><a href="contact.html">#01-16, Singapore 596180</a></li>
+          <li><a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2025 Elevation Hair Studios Pte. Ltd. &nbsp;(202531488E)</span>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a>
+        <a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+    </div>
+  </footer>
+
+  <a href="book.html" class="float-book" id="floatBook">Book Now</a>
+
+<script>
+  // Hamburger / mobile nav
+  (function() {
+    var hamburger = document.getElementById('hamburger');
+    var mobileNav = document.getElementById('mobileNav');
+    var mobileNavClose = document.getElementById('mobileNavClose');
+    function toggleNav(open) {
+      mobileNav.classList.toggle('open', open);
+      hamburger.classList.toggle('active', open);
+      hamburger.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open ? 'hidden' : '';
+    }
+    hamburger.addEventListener('click', function() { toggleNav(true); });
+    mobileNavClose.addEventListener('click', function() { toggleNav(false); });
+    mobileNav.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', function() { toggleNav(false); }); });
+  })();
+  // Custom cursor
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.transform = `translate(${mx-4}px,${my-4}px)`; });
+  (function animRing() {
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.transform = `translate(${rx-16}px,${ry-16}px)`;
+    requestAnimationFrame(animRing);
+  })();
+  document.querySelectorAll('a, button, [role="button"]').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width = '48px'; ring.style.height = '48px'; ring.style.borderColor = '#D4862A'; });
+    el.addEventListener('mouseleave', () => { ring.style.width = '32px'; ring.style.height = '32px'; ring.style.borderColor = 'rgba(212,134,42,0.5)'; });
+  });
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Floating book button
+  const fb = document.getElementById('floatBook');
+  window.addEventListener('scroll', () => { fb.classList.toggle('show', window.scrollY > 300); });
+</script>
+<script src="animated-underline.js"></script>
+</body>
+</html>
