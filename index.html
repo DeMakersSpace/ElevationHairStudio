@@ -252,7 +252,7 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 0 60px rgba(0,0,0,0.5);
-      width: 300px; height: 400px;
+      width: 0; height: 0; opacity: 0;
       max-width: 95vw; max-height: 85vh;
     }
     .scroll-hero-media img {
@@ -294,13 +294,17 @@
       line-height: 1.05;
       display: block;
       white-space: nowrap;
-      mix-blend-mode: difference;
+      background: rgba(13,11,9,0.62);
+      padding: 4px 18px 6px;
+      border-radius: 999px;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.45);
     }
     .scroll-label-hint {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px; font-weight: 600;
+      font-size: 12px; font-weight: 700;
       letter-spacing: 0.22em; text-transform: uppercase;
-      color: rgba(196,149,106,0.8);
+      color: var(--wood-lite);
+      text-shadow: 0 0 12px rgba(196,149,106,0.6), 0 1px 6px rgba(0,0,0,0.8);
       margin-top: 20px; display: block;
     }
 
@@ -1122,12 +1126,13 @@
     function applyProgress(p) {
       progress = Math.min(Math.max(p, 0), 1);
       var mob = isMob();
-      var w  = 300 + progress * (mob ? 650 : 1250);
-      var h  = 400 + progress * (mob ? 150 : 300);
+      var w  = progress * (mob ? 950 : 1550);
+      var h  = progress * (mob ? 550 : 700);
       var tx = progress * (mob ? 180 : 150);
 
+      heroMedia.style.opacity = Math.min(1, progress * 1.8) + '';
       heroMedia.style.width  = Math.min(w, window.innerWidth  * 0.95) + 'px';
-      heroMedia.style.height = Math.min(h, window.innerHeight * 0.55) + 'px';
+      heroMedia.style.height = Math.min(h, window.innerHeight * 0.75) + 'px';
 
       heroBg.style.opacity = 1 - progress;
 
