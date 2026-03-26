@@ -14,18 +14,16 @@
        HERO
     ───────────────────────────────────────────── */
     .hero {
-      padding: 80px 48px 80px;
+      padding: 130px 48px 110px;
       display: flex; flex-direction: column; justify-content: flex-end;
-      position: relative; overflow: hidden;
-      min-height: clamp(300px, 48vw, 700px);
-      background: var(--charcoal);
+      position: relative; overflow: hidden; min-height: 580px;
     }
     .hero-bg {
       position: absolute; inset: 0; z-index: 0;
     }
     .hero-bg img {
       width: 100%; height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       object-position: center;
       display: block;
     }
@@ -405,7 +403,7 @@
     ───────────────────────────────────────────── */
     @media (max-width: 1024px) {
       .nav { padding: 0 32px; }
-      .hero { padding: 60px 32px 60px; }
+      .hero { padding: 110px 32px 90px; }
       .menu-section { padding: 64px 32px; }
       .service-row { padding: 44px 0 44px 20px; gap: 32px; }
       .service-reveal-overlay { padding: 44px 0 44px 20px; gap: 32px; }
@@ -427,7 +425,7 @@
       .nav-links { display: none; }
       .nav-actions { display: none; }
       .nav-logo img { height: 38px; }
-      .hero { padding: 48px 24px 40px; }
+      .hero { padding: 48px 24px 40px; min-height: 300px; }
       .hero-heading { font-size: 44px; }
       .hero-subtext { font-size: 16px; margin-top: 20px; max-width: 320px; }
       .hero-bg img { object-position: 72% center; }
