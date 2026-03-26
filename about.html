@@ -44,12 +44,18 @@
     .about-hero {
       position: relative;
       overflow: hidden;
+      min-height: 580px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
     }
     .hero-bg {
-      position: relative; z-index: 0;
+      position: absolute; inset: 0; z-index: 0;
     }
     .hero-bg img {
-      width: 100%; height: auto;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
       display: block;
     }
     .hero-bg::after {
@@ -59,7 +65,7 @@
         linear-gradient(to right, rgba(13,11,9,0.45) 0%, transparent 60%);
     }
     .about-hero-left {
-      position: absolute; bottom: 0; left: 0; right: 0;
+      position: relative;
       z-index: 1;
       padding: 0 48px 64px;
     }
@@ -343,6 +349,7 @@
        RESPONSIVE
     ───────────────────────────────────────────── */
     @media (max-width: 1024px) {
+      .about-hero { min-height: 500px; }
       .about-hero-left { padding: 0 32px 52px; }
       .about-hero-heading { font-size: 52px; }
       .story-section { padding: 80px 32px; }
@@ -357,9 +364,10 @@
       .nav-links { display: none; }
       .nav-actions { display: none; }
       .nav-logo img { height: 38px; }
+      .about-hero { min-height: 440px; }
       .about-hero-left { padding: 0 24px 40px; }
       .about-hero-heading { font-size: 42px; }
-      .about-hero-pull-quote { font-size: 20px; }
+      .about-hero-pull-quote { font-size: 18px; }
       .story-section { padding: 64px 24px; }
       .story-grid { grid-template-columns: 1fr; gap: 48px; }
       .story-heading { font-size: 32px; }
@@ -384,8 +392,10 @@
       .float-book { bottom: 20px; right: 20px; }
     }
     @media (max-width: 480px) {
+      .about-hero { min-height: 380px; }
       .about-hero-left { padding: 0 20px 32px; }
-      .about-hero-heading { font-size: 34px; }
+      .about-hero-heading { font-size: 32px; }
+      .about-hero-pull-quote { font-size: 16px; }
       .stats-grid { grid-template-columns: 1fr; }
       .stat-item:nth-child(odd) { border-right: none; padding-right: 0; }
       .stat-item { text-align: center; }
