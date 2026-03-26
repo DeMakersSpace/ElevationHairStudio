@@ -44,18 +44,20 @@
     .about-hero {
       position: relative;
       overflow: hidden;
-      min-height: 580px;
+      aspect-ratio: 2752 / 1154;
+      min-height: 380px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+      background: var(--charcoal);
     }
     .hero-bg {
       position: absolute; inset: 0; z-index: 0;
     }
     .hero-bg img {
       width: 100%; height: 100%;
-      object-fit: cover;
-      object-position: center top;
+      object-fit: contain;
+      object-position: center;
       display: block;
     }
     .hero-bg::after {
@@ -349,7 +351,6 @@
        RESPONSIVE
     ───────────────────────────────────────────── */
     @media (max-width: 1024px) {
-      .about-hero { min-height: 500px; }
       .about-hero-left { padding: 0 32px 52px; }
       .about-hero-heading { font-size: 52px; }
       .story-section { padding: 80px 32px; }
@@ -364,7 +365,6 @@
       .nav-links { display: none; }
       .nav-actions { display: none; }
       .nav-logo img { height: 38px; }
-      .about-hero { min-height: 440px; }
       .about-hero-left { padding: 0 24px 40px; }
       .about-hero-heading { font-size: 42px; }
       .about-hero-pull-quote { font-size: 18px; }
@@ -392,7 +392,6 @@
       .float-book { bottom: 20px; right: 20px; }
     }
     @media (max-width: 480px) {
-      .about-hero { min-height: 380px; }
       .about-hero-left { padding: 0 20px 32px; }
       .about-hero-heading { font-size: 32px; }
       .about-hero-pull-quote { font-size: 16px; }

@@ -42,17 +42,20 @@
        HERO
     ───────────────────────────────────────────── */
     .hero {
-      padding: 130px 48px 110px;
+      padding: 80px 48px 80px;
       display: flex; flex-direction: column; justify-content: flex-end;
-      position: relative; overflow: hidden; min-height: 580px;
+      position: relative; overflow: hidden;
+      aspect-ratio: 1308 / 736;
+      min-height: 340px;
+      background: var(--charcoal);
     }
     .hero-bg {
       position: absolute; inset: 0; z-index: 0;
     }
     .hero-bg img {
       width: 100%; height: 100%;
-      object-fit: cover;
-      object-position: 62% center;
+      object-fit: contain;
+      object-position: center;
       display: block;
     }
     .hero-bg::after {
@@ -327,7 +330,7 @@
     ───────────────────────────────────────────── */
     @media (max-width: 1024px) {
       .nav { padding: 0 32px; }
-      .hero { padding: 80px 32px; gap: 48px; }
+      .hero { padding: 60px 32px; }
       .hero-heading { font-size: 50px; }
       .gallery-section { padding: 64px 32px 80px; }
       .instagram-band { padding: 64px 32px; }
@@ -339,7 +342,7 @@
       .nav-links { display: none; }
       .nav-actions { display: none; }
       .nav-logo img { height: 38px; }
-      .hero { padding: 80px 24px 56px; min-height: 420px; }
+      .hero { padding: 48px 24px 36px; }
       .hero-bg img { object-position: 72% center; }
       .hero-heading { font-size: 40px; }
       .hero-desc { font-size: 17px; margin-top: 20px; max-width: 320px; }
