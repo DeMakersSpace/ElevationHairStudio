@@ -7,253 +7,32 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
   <style>
-    :root {
-      --ink:        #0D0B09;
-      --charcoal:   #1A1714;
-      --panel:      #221E1A;
-      --wood-deep:  #5C3D22;
-      --wood:       #A0714F;
-      --wood-lite:  #C4956A;
-      --stone:      #8A8278;
-      --fog:        #C4BFB8;
-      --white:      #F5F2EE;
-      --muted:      #7A7268;
-      --border:     rgba(180,140,100,0.15);
-      --grad-wood:  linear-gradient(135deg, #5C3D22 0%, #A0714F 60%, #C4956A 100%);
-    }
-
-    /* ── Reset ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
-    /* Preserve native text cursor inside form elements */
-    input, textarea, select, [contenteditable] { cursor: text !important; }
-    html { font-size: 16px; }
-    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
-    body {
-      font-family: 'Barlow', sans-serif;
-      color: var(--ink);
-      background: var(--white);
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-      line-height: 1.7;
-    }
-    img { display: block; max-width: 100%; }
-    a { text-decoration: none; color: inherit; }
-
-    /* ── Grain overlay ── */
-    body::after {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: 0.028;
-      pointer-events: none;
-      z-index: 9990;
-    }
-
-    /* ── Custom cursor ── */
-    .cursor-dot {
-      position: fixed; top: 0; left: 0; z-index: 9999;
-      width: 8px; height: 8px;
-      background: var(--wood-lite); border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
-    }
-    .cursor-ring {
-      position: fixed; top: 0; left: 0; z-index: 9998;
-      width: 32px; height: 32px;
-      border: 1.5px solid rgba(196,149,106,0.45); border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
-    }
-    @media (hover: none) and (pointer: coarse) {
-      .cursor-dot, .cursor-ring { display: none; }
-      *, *::before, *::after { cursor: auto !important; }
-    }
-
-    /* ── Scroll reveal ── */
-    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
-    @media (prefers-reduced-motion: reduce) {
-      .reveal { opacity: 1; transform: none; transition: none; }
-      .marquee-track { animation-play-state: paused; }
-    }
-
-    /* ── Floating book button ── */
-    .float-book {
-      position: fixed; bottom: 32px; right: 32px; z-index: 500;
-      background: var(--wood-lite); color: var(--ink);
-      font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 600;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      padding: 13px 22px;
-      opacity: 0; transform: translateY(16px);
-      transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
-      pointer-events: none;
-    }
-    .float-book.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    .float-book:hover { background: var(--wood); }
-
-    /* ── Floating WhatsApp button ── */
-    .float-wa {
-      position: fixed; bottom: 90px; right: 32px; z-index: 500;
-      width: 48px; height: 48px;
-      background: #25D366; color: #fff;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; transform: translateY(16px);
-      transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease, box-shadow 0.2s ease;
-      pointer-events: none;
-      box-shadow: 0 4px 18px rgba(37,211,102,0.35);
-    }
-    .float-wa.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    .float-wa:hover { background: #1ebe5d; box-shadow: 0 6px 24px rgba(37,211,102,0.45); }
-    .float-wa:focus-visible { outline: 2px solid #25D366; outline-offset: 3px; }
-    .float-wa svg { width: 24px; height: 24px; flex-shrink: 0; }
-    @media (max-width: 768px) { .float-wa { bottom: 78px; right: 20px; } }
-
-    /* ── Focus-visible states (keyboard accessibility) ── */
-    :focus-visible { outline: 2px solid var(--wood-lite); outline-offset: 3px; }
-    .nav-book:focus-visible, .float-book:focus-visible,
-    .outline-btn:focus-visible, .mobile-nav-book:focus-visible {
-      outline: 2px solid var(--wood-lite); outline-offset: 3px;
-    }
-    .nav-links a:focus-visible { outline: 2px solid var(--wood-lite); outline-offset: 4px; color: var(--ink); }
-    /* Dark backgrounds need a lighter outline */
-    .mobile-nav a:focus-visible { outline-color: var(--fog); }
-    .footer-col ul a:focus-visible, .footer-social a:focus-visible { outline-color: var(--fog); }
-
-    /* ── Marquee ── */
-    .marquee-strip {
-      background: var(--charcoal);
-      overflow: hidden; padding: 13px 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .marquee-track {
-      display: flex; gap: 0; align-items: center; width: max-content;
-      animation: marquee 28s linear infinite;
-    }
-    .marquee-track span {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--stone); padding: 0 26px; white-space: nowrap;
-    }
-    .marquee-track .marquee-dot { padding: 0 4px; color: var(--wood) !important; font-size: 8px !important; }
-    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-    .marquee-strip:hover .marquee-track { animation-play-state: paused; }
-
-    /* ─────────────────────────────────────────────
-       NAV
-    ───────────────────────────────────────────── */
-    .nav {
-      position: sticky; top: 0; z-index: 200;
-      background: rgba(245,242,238,0.95);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center;
-      padding: 0 48px;
-      height: 80px;
-    }
-    .nav-logo {
-      display: flex; align-items: center; gap: 10px;
-      flex-shrink: 0; text-decoration: none;
-    }
-    .nav-logo img {
-      height: 52px; width: auto;
-      filter: brightness(0);
-      opacity: 0.85;
-    }
-    .nav-links {
-      flex: 1;
-      display: flex; align-items: center; justify-content: center;
-      gap: 36px; list-style: none;
-    }
-    .nav-links a {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 12px; font-weight: 500;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--stone);
-      transition: color 0.2s ease;
-    }
-    .nav-links a:hover { color: var(--ink); }
-    .nav-links a.active { color: var(--wood-lite); }
-    .nav-actions { flex-shrink: 0; }
-    .nav-book {
-      display: inline-block;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--ink);
-      background: var(--wood-lite);
-      padding: 10px 24px;
-      transition: background 0.2s ease;
-    }
-    .nav-book:hover { background: var(--wood); }
-
-    /* ── Hamburger ── */
-    .hamburger {
-      display: none; flex-direction: column; justify-content: center; gap: 5px;
-      padding: 6px; background: none; border: none; cursor: pointer; z-index: 300; margin-left: auto;
-    }
-    .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--ink); transition: transform 0.25s ease, opacity 0.25s ease; }
-    .hamburger.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-    .hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-    .hamburger.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-    @media (max-width: 768px) { .hamburger { display: flex; } }
-
-    /* ── Mobile nav ── */
-    .mobile-nav {
-      position: fixed; inset: 0; z-index: 250;
-      background: var(--ink);
-      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 36px;
-      opacity: 0; pointer-events: none; transform: translateY(-6px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .mobile-nav.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    .mobile-nav a {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 32px; font-weight: 300;
-      color: var(--white); letter-spacing: -0.01em; transition: color 0.2s ease;
-    }
-    .mobile-nav a:hover { color: var(--wood-lite); }
-    .mobile-nav-close {
-      position: absolute; top: 28px; right: 32px; background: none; border: none;
-      font-size: 30px; color: var(--stone); cursor: pointer; transition: color 0.2s ease; line-height: 1;
-    }
-    .mobile-nav-close:hover { color: var(--white); }
-    .mobile-nav-book {
-      font-family: 'Barlow Condensed', sans-serif !important;
-      font-size: 11px !important; font-weight: 600 !important;
-      letter-spacing: 0.16em !important; text-transform: uppercase !important;
-      color: var(--ink) !important; background: var(--wood-lite) !important;
-      padding: 12px 28px !important; font-style: normal !important;
-      transition: background 0.2s ease !important;
-    }
-    .mobile-nav-book:hover { background: var(--wood) !important; }
 
     /* ─────────────────────────────────────────────
        HERO
     ───────────────────────────────────────────── */
     .hero {
-      background: var(--white);
-      padding: 100px 48px;
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 80px; align-items: center;
-      position: relative; overflow: hidden; min-height: 420px;
+      padding: 130px 48px 110px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      position: relative; overflow: hidden; min-height: 580px;
     }
-    .hero::before {
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: 62% center;
+      display: block;
+    }
+    .hero-bg::after {
       content: '';
       position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse 55% 80% at 5% 50%, rgba(160,113,79,0.09) 0%, transparent 70%),
-        radial-gradient(ellipse 35% 55% at 90% 30%, rgba(92,61,34,0.06) 0%, transparent 70%);
-      pointer-events: none;
+        linear-gradient(to bottom, rgba(13,11,9,0.15) 0%, rgba(13,11,9,0.5) 55%, rgba(13,11,9,0.82) 100%),
+        linear-gradient(to right, rgba(13,11,9,0.45) 0%, transparent 60%);
     }
     .hero-left { position: relative; z-index: 1; }
     .hero-eyebrow {
@@ -265,19 +44,15 @@
     .hero-heading {
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(52px, 6vw, 80px); font-weight: 300;
-      color: var(--ink); line-height: 0.95; letter-spacing: -0.02em;
+      color: var(--white); line-height: 0.95; letter-spacing: -0.02em;
     }
-    .hero-right { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 28px; }
+    .hero-right { position: relative; z-index: 1; }
     .hero-subtext {
       font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; font-style: italic;
-      color: var(--stone); line-height: 1.6;
-      border-left: 2px solid rgba(196,149,106,0.35); padding-left: 24px; max-width: 340px;
+      color: rgba(245,242,238,0.75); line-height: 1.65;
+      border-left: 2px solid rgba(196,149,106,0.55); padding-left: 20px;
+      max-width: 380px; margin-top: 32px;
     }
-    .hero-deco {
-      width: 56px; height: 56px; border: 1px solid rgba(196,149,106,0.3); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .hero-deco svg { color: var(--wood-lite); }
 
     /* Animated underline */
     .hero-underline-wrap { position: relative; display: inline-block; }
@@ -307,37 +82,87 @@
     /* ─────────────────────────────────────────────
        SERVICE MENU
     ───────────────────────────────────────────── */
-    .menu-section { background: #EDEBE6; padding: 80px 0; }
-    .menu-header { padding: 0 48px; margin-bottom: 52px; }
+    .menu-section { background: #EDEBE6; padding: 100px 48px; }
+    .menu-body { max-width: 1160px; margin: 0 auto; }
+    .menu-header { margin-bottom: 64px; }
+    .menu-header .section-eyebrow { margin-bottom: 16px; }
     .menu-section-title {
-      font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300;
-      color: var(--ink); line-height: 1.1; letter-spacing: -0.01em;
+      font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300;
+      color: var(--ink); line-height: 1.1; letter-spacing: -0.02em;
     }
 
     .service-row {
       display: grid;
       grid-template-columns: 72px 1fr auto auto;
-      align-items: center; gap: 32px;
-      padding: 36px 48px;
+      align-items: center; gap: 40px;
+      padding: 52px 0 52px 24px;
       border-bottom: 1px solid var(--border);
-      transition: background 0.25s ease;
       position: relative;
+      overflow: hidden;
     }
     .service-row:first-of-type { border-top: 1px solid var(--border); }
+    /* Keep base content above overlay */
+    .service-row > *:not(.service-reveal-overlay) { position: relative; z-index: 1; }
     .service-row::before {
       content: ''; position: absolute; left: 0; top: 0; bottom: 0;
       width: 3px; background: var(--grad-wood);
       transform: scaleY(0); transform-origin: bottom;
       transition: transform 0.3s ease;
+      z-index: 3;
     }
     @media (prefers-reduced-motion: reduce) { .service-row::before { transition: none; } }
     .service-row:hover::before { transform: scaleY(1); }
-    .service-row:hover { background: rgba(160,113,79,0.05); }
     .service-row:hover .service-num { opacity: 1; }
+
+    /* ── Circle reveal overlay ── */
+    .service-reveal-overlay {
+      position: absolute; inset: 0; z-index: 2;
+      display: grid;
+      grid-template-columns: 72px 1fr auto auto;
+      align-items: center; gap: 40px;
+      padding: 52px 0 52px 24px;
+      background: var(--charcoal);
+      clip-path: circle(44px at 60px 50%);
+      pointer-events: none;
+    }
+    .overlay-num {
+      font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 300;
+      color: var(--wood-lite); opacity: 0.25; line-height: 1; user-select: none;
+      font-variant-numeric: tabular-nums;
+    }
+    .overlay-info { min-width: 0; }
+    .overlay-name {
+      font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400;
+      color: var(--white); margin-bottom: 6px; line-height: 1.2;
+    }
+    .overlay-desc { font-size: 13px; font-weight: 300; color: var(--stone); max-width: 440px; line-height: 1.7; }
+    .overlay-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+    .overlay-price {
+      font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600;
+      color: var(--wood-lite); white-space: nowrap; font-variant-numeric: tabular-nums;
+    }
+    .overlay-duration {
+      font-family: 'Barlow Condensed', sans-serif;
+      background: rgba(196,149,106,0.12); color: var(--wood-lite);
+      border: 1px solid rgba(196,149,106,0.25);
+      padding: 3px 12px; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
+    }
+    .overlay-book-btn {
+      display: inline-block; flex-shrink: 0;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink); background: var(--wood-lite);
+      padding: 11px 22px; white-space: nowrap;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .service-reveal-overlay { display: none; }
+    }
 
     .service-num {
       font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 300;
-      color: var(--wood); opacity: 0.3; line-height: 1;
+      color: var(--white); opacity: 1; line-height: 1;
       transition: opacity 0.2s ease; user-select: none;
       font-variant-numeric: tabular-nums;
     }
@@ -377,12 +202,12 @@
        ADD-ON
     ───────────────────────────────────────────── */
     .addon-section { background: var(--white); padding: 72px 48px; border-top: 1px solid var(--border); }
+    .addon-inner { max-width: 1160px; margin: 0 auto; }
     .addon-section-header { margin-bottom: 40px; }
     .addon-card {
       background: var(--white); border: 1px solid var(--border);
       display: grid; grid-template-columns: auto 1fr auto;
       align-items: center; gap: 36px; padding: 36px 40px;
-      max-width: 960px;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
       box-shadow: 0 2px 16px rgba(92,61,34,0.08);
     }
@@ -407,48 +232,116 @@
     /* ─────────────────────────────────────────────
        POLICY ACCORDION
     ───────────────────────────────────────────── */
-    .policy-section { background: #EDEBE6; padding: 80px 48px; }
-    .policy-heading-row { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px; }
+    /* ─────────────────────────────────────────────
+       GOOD TO KNOW / BEFORE YOU VISIT
+    ───────────────────────────────────────────── */
+    .policy-section {
+      background: var(--charcoal);
+      padding: 96px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .policy-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 65% 80% at 8% 50%, rgba(160,113,79,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 45% 60% at 92% 30%, rgba(92,61,34,0.06) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .policy-heading-row {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 44px; position: relative; z-index: 1;
+      max-width: 1160px; margin-left: auto; margin-right: auto;
+    }
+    .policy-section .section-title { color: var(--white); }
     .policy-note {
-      font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 500;
-      letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px; font-weight: 300; font-style: italic;
+      color: var(--muted); letter-spacing: 0.04em;
+      padding-bottom: 5px;
     }
 
-    .accordion { max-width: 860px; }
-    .accordion-item { border-bottom: 1px solid var(--border); }
-    .accordion-item:first-child { border-top: 1px solid var(--border); }
+    .accordion {
+      max-width: 1160px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex; flex-direction: column; gap: 10px;
+      position: relative; z-index: 1;
+    }
+    .accordion-item {
+      border: 1px solid rgba(196,149,106,0.12);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.025);
+      overflow: hidden;
+      transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    }
+    .accordion-item:hover {
+      border-color: rgba(196,149,106,0.24);
+      background: rgba(255,255,255,0.04);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(0,0,0,0.22);
+    }
+    .accordion-item.open {
+      border-color: rgba(196,149,106,0.35);
+      background: rgba(196,149,106,0.045);
+      box-shadow: 0 4px 36px rgba(92,61,34,0.14), inset 0 1px 0 rgba(196,149,106,0.08);
+      transform: translateY(0);
+    }
     .accordion-trigger {
       width: 100%; display: flex; align-items: center; justify-content: space-between;
-      padding: 24px 0; background: none; border: none; cursor: pointer;
+      padding: 22px 24px; background: none; border: none; cursor: pointer;
       text-align: left; gap: 24px;
     }
-    .accordion-trigger:focus-visible { outline: 2px solid var(--wood-lite); outline-offset: -2px; }
-    .accordion-trigger-left { display: flex; align-items: center; gap: 20px; }
+    .accordion-trigger:focus-visible { outline: 2px solid var(--wood-lite); outline-offset: -3px; border-radius: 15px; }
+    .accordion-trigger-left { display: flex; align-items: center; gap: 18px; }
     .accordion-icon-wrap {
-      width: 40px; height: 40px; flex-shrink: 0;
-      background: rgba(196,149,106,0.1); border-radius: 50%;
+      width: 44px; height: 44px; flex-shrink: 0;
+      background: rgba(196,149,106,0.1);
+      border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
+      transition: background 0.25s ease;
     }
-    .accordion-icon-wrap svg { color: var(--wood-lite); }
+    .accordion-item.open .accordion-icon-wrap { background: rgba(196,149,106,0.22); }
+    .accordion-icon-wrap svg { color: var(--wood-lite); transition: color 0.25s ease; }
     .accordion-label {
       font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400;
-      color: var(--ink); line-height: 1.2;
+      color: var(--fog); line-height: 1.2;
+      transition: color 0.25s ease;
     }
+    .accordion-item.open .accordion-label { color: var(--white); }
     .accordion-chevron {
-      flex-shrink: 0; width: 20px; height: 20px; color: var(--stone);
-      transition: transform 0.3s ease, color 0.2s ease;
+      flex-shrink: 0; width: 18px; height: 18px; color: var(--muted);
+      transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.25s ease;
     }
     .accordion-item.open .accordion-chevron { transform: rotate(180deg); color: var(--wood-lite); }
-    .accordion-item.open .accordion-label { color: var(--wood-lite); }
     .accordion-body {
       overflow: hidden; max-height: 0;
-      transition: max-height 0.35s ease, padding 0.3s ease;
+      transition: max-height 0.36s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
-    .accordion-item.open .accordion-body { max-height: 300px; }
-    @media (prefers-reduced-motion: reduce) { .accordion-body { transition: none; } }
+    .accordion-item.open .accordion-body { max-height: 320px; }
+    @media (prefers-reduced-motion: reduce) {
+      .accordion-body, .accordion-chevron, .accordion-item { transition: none; }
+    }
     .accordion-body-inner {
-      padding: 0 0 28px 60px;
-      font-size: 14px; font-weight: 300; color: var(--muted); line-height: 1.8;
+      padding: 0 24px 24px 86px;
+      font-size: 14px; font-weight: 300; color: var(--stone); line-height: 1.82;
+    }
+    /* Staggered reveal for accordion items — override default .reveal timing */
+    .policy-section .accordion-item.reveal {
+      transition:
+        opacity 0.42s ease-out,
+        transform 0.42s ease-out,
+        border-color 0.25s ease,
+        background 0.25s ease,
+        box-shadow 0.25s ease;
+    }
+    .policy-section .accordion-item.reveal.visible {
+      transition:
+        border-color 0.25s ease,
+        background 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
     }
 
     /* ─────────────────────────────────────────────
@@ -463,7 +356,7 @@
       background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(160,113,79,0.09) 0%, transparent 70%);
       pointer-events: none;
     }
-    .cta-inner { position: relative; z-index: 1; }
+    .cta-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
     .cta-eyebrow {
       font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 600;
       letter-spacing: 0.3em; text-transform: uppercase; color: var(--wood);
@@ -504,62 +397,61 @@
     .cta-sub a { color: var(--stone); transition: color 0.2s ease; }
     .cta-sub a:hover { color: var(--white); }
 
-    /* ─────────────────────────────────────────────
-       FOOTER
-    ───────────────────────────────────────────── */
-    .footer { background: var(--ink); padding: 60px 48px 32px; border-top: 1px solid var(--border); }
-    .footer-grid { display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
-    .footer-logo { height: 42px; margin-bottom: 18px; filter: brightness(0) invert(1); opacity: 0.7; }
-    .footer-desc { font-size: 13px; font-weight: 300; line-height: 1.75; color: var(--muted); max-width: 240px; }
-    .footer-col-title { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--wood); margin-bottom: 20px; }
-    .footer-col ul { list-style: none; }
-    .footer-col ul li+li { margin-top: 10px; }
-    .footer-col ul a { font-size: 13px; font-weight: 300; color: var(--muted); transition: color 0.2s ease; }
-    .footer-col ul a:hover { color: var(--white); }
-    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
-    .footer-copy { font-size: 11.5px; color: var(--muted); opacity: 0.7; }
-    .footer-social { display: flex; gap: 20px; }
-    .footer-social a { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; color: var(--muted); transition: color 0.2s ease; }
-    .footer-social a:hover { color: var(--wood-lite); }
 
     /* ─────────────────────────────────────────────
        RESPONSIVE
     ───────────────────────────────────────────── */
     @media (max-width: 1024px) {
       .nav { padding: 0 32px; }
-      .hero { padding: 80px 32px; gap: 48px; }
-      .menu-header { padding: 0 32px; }
-      .service-row { padding: 32px; gap: 24px; }
+      .hero { padding: 110px 32px 90px; }
+      .menu-section { padding: 64px 32px; }
+      .service-row { padding: 44px 0 44px 20px; gap: 32px; }
+      .service-reveal-overlay { padding: 44px 0 44px 20px; gap: 32px; }
       .addon-section { padding: 64px 32px; }
-      .policy-section { padding: 64px 32px; }
+      .policy-section { padding: 80px 32px; }
       .cta-section { padding: 72px 32px; }
       .footer { padding: 60px 32px 32px; }
     }
     @media (max-width: 900px) {
       .service-row { grid-template-columns: 56px 1fr; grid-template-rows: auto auto; }
+      .service-reveal-overlay { grid-template-columns: 56px 1fr; grid-template-rows: auto auto; }
       .service-meta { flex-direction: row; align-items: center; grid-column: 2; gap: 12px; }
+      .overlay-meta { flex-direction: row; align-items: center; grid-column: 2; gap: 12px; }
       .service-book-btn { grid-column: 2; justify-self: start; margin-top: 4px; }
+      .overlay-book-btn { grid-column: 2; justify-self: start; margin-top: 4px; }
     }
     @media (max-width: 768px) {
       .nav { padding: 0 20px; height: 64px; }
       .nav-links { display: none; }
       .nav-actions { display: none; }
       .nav-logo img { height: 38px; }
-      .hero { grid-template-columns: 1fr; gap: 32px; padding: 64px 24px; min-height: auto; }
+      .hero { padding: 90px 24px 72px; min-height: 440px; }
       .hero-heading { font-size: 44px; }
-      .menu-header { padding: 0 24px; }
-      .service-row { grid-template-columns: 1fr; padding: 28px 24px; gap: 12px; }
+      .hero-subtext { font-size: 17px; margin-top: 24px; }
+      .hero-bg img { object-position: 72% center; }
+      .menu-section { padding: 56px 24px; }
+      .service-row { grid-template-columns: 1fr; padding: 36px 0 36px 16px; gap: 14px; }
+      .service-reveal-overlay { display: none; }
       .service-num { font-size: 32px; }
       .service-meta { flex-direction: row; align-items: center; gap: 12px; }
       .service-book-btn { width: 100%; text-align: center; padding: 13px; margin-top: 8px; }
       .addon-section { padding: 56px 24px; }
       .addon-card { grid-template-columns: auto 1fr; gap: 20px; padding: 28px 24px; }
       .addon-price-col { grid-column: 2; text-align: left; }
-      .policy-section { padding: 56px 24px; }
-      .accordion-body-inner { padding-left: 24px; }
+      .policy-section { padding: 64px 24px; }
+      .accordion-body-inner { padding: 0 20px 22px 68px; }
+      .accordion-trigger { padding: 18px 20px; }
+      .accordion-icon-wrap { width: 40px; height: 40px; border-radius: 10px; }
       .cta-section { padding: 64px 24px; }
-      .footer { padding: 48px 24px 28px; }
-      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .footer { padding: 48px 20px 24px; }
+      .footer-grid { display: flex; flex-direction: column; gap: 28px; }
+      .footer-grid > div:first-child { text-align: center; }
+      .footer-grid > div:first-child .footer-logo { margin: 0 auto 18px; }
+      .footer-grid > div:first-child .footer-desc { max-width: 100%; margin: 0 auto; }
+      .footer-cols-wrap { display: flex; flex-direction: row; gap: 12px; justify-content: space-between; }
+      .footer-cols-wrap .footer-col { flex: 1; min-width: 0; }
+      .footer-cols-wrap .footer-col ul a { font-size: 11px; }
+      .footer-cols-wrap .footer-col ul li + li { margin-top: 8px; }
       .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
       .float-book { bottom: 20px; right: 20px; }
     }
@@ -570,13 +462,11 @@
   </style>
 </head>
 <body>
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
 
 <!-- NAV -->
 <nav class="nav" role="navigation" aria-label="Main navigation">
   <a href="index.html" class="nav-logo" aria-label="Elevation Hair Studios – Home">
-    <img src="ElevationHairStudiosLogo.png" alt="Elevation Hair Studios">
+    <img src="Brand Logo/Logo - EHS (without background).png" alt="Elevation Hair Studios">
   </a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
@@ -596,7 +486,7 @@
 <nav class="mobile-nav" id="mobileNav" role="dialog" aria-modal="true" aria-label="Site navigation">
   <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">&times;</button>
   <a href="index.html">Home</a>
-  <a href="services.html" style="color:var(--wood-lite);">Services</a>
+  <a href="services.html" class="active">Services</a>
   <a href="about.html">About</a>
   <a href="gallery.html">Gallery</a>
   <a href="contact.html">Contact</a>
@@ -605,6 +495,9 @@
 
 <!-- HERO -->
 <section class="hero" aria-label="Services hero">
+  <div class="hero-bg" aria-hidden="true">
+    <img src="background for service hero.jpg" alt="" loading="lazy">
+  </div>
   <div class="hero-left">
     <div class="hero-eyebrow">What We Offer</div>
     <h1 class="hero-heading">Premium<br><span class="hero-underline-wrap">Services.
@@ -612,17 +505,7 @@
         <path class="hero-underline-path" d="M4,14 C60,6 120,18 180,10 C220,4 260,16 296,8"/>
       </svg>
     </span></h1>
-  </div>
-  <div class="hero-right">
     <p class="hero-subtext">Every service is a craft. Every visit, an elevation.</p>
-    <div class="hero-deco" aria-hidden="true">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
-        <line x1="20" y1="4" x2="8.12" y2="15.88"/>
-        <line x1="14.47" y1="14.48" x2="20" y2="20"/>
-        <line x1="8.12" y1="8.12" x2="12" y2="12"/>
-      </svg>
-    </div>
   </div>
 </section>
 
@@ -646,6 +529,7 @@
 
 <!-- SERVICE MENU -->
 <section class="menu-section" aria-labelledby="menu-heading">
+  <div class="menu-body">
   <div class="menu-header">
     <div class="section-eyebrow">The Full Menu</div>
     <h2 class="menu-section-title" id="menu-heading">Our Services</h2>
@@ -662,6 +546,18 @@
       <div class="service-duration">1 hr+</div>
     </div>
     <a href="book.html" class="service-book-btn" aria-label="Book Signature Haircut">Book This</a>
+    <div class="service-reveal-overlay" aria-hidden="true">
+      <div class="overlay-num">01</div>
+      <div class="overlay-info">
+        <div class="overlay-name">Signature Haircut</div>
+        <div class="overlay-desc">Our flagship service for adults — thorough consultation, precision fade or classic cut, and a finish that lasts. Built on 7+ years of craft experience.</div>
+      </div>
+      <div class="overlay-meta">
+        <div class="overlay-price">From $35</div>
+        <div class="overlay-duration">1 hr+</div>
+      </div>
+      <a href="book.html" class="overlay-book-btn" tabindex="-1">Book This</a>
+    </div>
   </div>
 
   <div class="service-row reveal reveal-delay-2">
@@ -675,6 +571,18 @@
       <div class="service-duration">45 min+</div>
     </div>
     <a href="book.html" class="service-book-btn" aria-label="Book Teen Cut">Book This</a>
+    <div class="service-reveal-overlay" aria-hidden="true">
+      <div class="overlay-num">02</div>
+      <div class="overlay-info">
+        <div class="overlay-name">Teen Cut</div>
+        <div class="overlay-desc">Tailored for younger clients — the same quality and care as our Signature Cut, delivered with patient attention at an accessible price point.</div>
+      </div>
+      <div class="overlay-meta">
+        <div class="overlay-price">From $27</div>
+        <div class="overlay-duration">45 min+</div>
+      </div>
+      <a href="book.html" class="overlay-book-btn" tabindex="-1">Book This</a>
+    </div>
   </div>
 
   <div class="service-row reveal reveal-delay-3">
@@ -688,6 +596,18 @@
       <div class="service-duration">1 hr 15 min+</div>
     </div>
     <a href="book.html" class="service-book-btn" aria-label="Book Signature Cut with Beard Design">Book This</a>
+    <div class="service-reveal-overlay" aria-hidden="true">
+      <div class="overlay-num">03</div>
+      <div class="overlay-info">
+        <div class="overlay-name">Signature Cut with Beard Design</div>
+        <div class="overlay-desc">The full package — your haircut perfected, paired with precise beard sculpting and line work. Arrive as one person, leave as another.</div>
+      </div>
+      <div class="overlay-meta">
+        <div class="overlay-price">From $38</div>
+        <div class="overlay-duration">1 hr 15 min+</div>
+      </div>
+      <a href="book.html" class="overlay-book-btn" tabindex="-1">Book This</a>
+    </div>
   </div>
 
   <div class="service-row reveal reveal-delay-4">
@@ -701,6 +621,18 @@
       <div class="service-duration">1 hr+</div>
     </div>
     <a href="book.html" class="service-book-btn" aria-label="Book Beard Design and Sculpting">Book This</a>
+    <div class="service-reveal-overlay" aria-hidden="true">
+      <div class="overlay-num">04</div>
+      <div class="overlay-info">
+        <div class="overlay-name">Beard Design and Sculpting</div>
+        <div class="overlay-desc">Dedicated beard work — from shaping and detailing to full sculpting. If your beard is your signature, we'll make sure it's sharp.</div>
+      </div>
+      <div class="overlay-meta">
+        <div class="overlay-price">From $23</div>
+        <div class="overlay-duration">1 hr+</div>
+      </div>
+      <a href="book.html" class="overlay-book-btn" tabindex="-1">Book This</a>
+    </div>
   </div>
 
   <div class="service-row reveal">
@@ -714,11 +646,25 @@
       <div class="service-duration">2 hr 30 min+</div>
     </div>
     <a href="book.html" class="service-book-btn" aria-label="Book Elite Grooming Experience">Book This</a>
+    <div class="service-reveal-overlay" aria-hidden="true">
+      <div class="overlay-num">05</div>
+      <div class="overlay-info">
+        <div class="overlay-name">Elite Grooming Experience</div>
+        <div class="overlay-desc">Our premium, all-inclusive session. Full haircut, beard work, scalp treatment, and an elevated experience from start to finish. Reserved for those who want the absolute best.</div>
+      </div>
+      <div class="overlay-meta">
+        <div class="overlay-price">From $102</div>
+        <div class="overlay-duration">2 hr 30 min+</div>
+      </div>
+      <a href="book.html" class="overlay-book-btn" tabindex="-1">Book This</a>
+    </div>
   </div>
+  </div><!-- /menu-body -->
 </section>
 
 <!-- ADD-ON -->
 <section class="addon-section" aria-labelledby="addon-heading">
+  <div class="addon-inner">
   <div class="addon-section-header">
     <div class="section-eyebrow">Optional Upgrade</div>
     <h2 class="section-title" id="addon-heading">Complete Your Experience</h2>
@@ -738,6 +684,7 @@
       <div class="addon-note">10 min &nbsp;·&nbsp; Ask at time of booking</div>
     </div>
   </div>
+  </div><!-- /addon-inner -->
 </section>
 
 <!-- POLICY ACCORDION -->
@@ -747,12 +694,12 @@
       <div class="section-eyebrow">Good to Know</div>
       <h2 class="section-title" id="policy-heading">Before You Visit</h2>
     </div>
-    <span class="policy-note">Tap to expand</span>
+    <span class="policy-note">Tap any card to expand</span>
   </div>
 
   <div class="accordion" role="list">
 
-    <div class="accordion-item" role="listitem">
+    <div class="accordion-item reveal reveal-delay-1" role="listitem">
       <button class="accordion-trigger" aria-expanded="false" aria-controls="policy-late">
         <div class="accordion-trigger-left">
           <div class="accordion-icon-wrap" aria-hidden="true">
@@ -773,7 +720,7 @@
       </div>
     </div>
 
-    <div class="accordion-item" role="listitem">
+    <div class="accordion-item reveal reveal-delay-2" role="listitem">
       <button class="accordion-trigger" aria-expanded="false" aria-controls="policy-cancel">
         <div class="accordion-trigger-left">
           <div class="accordion-icon-wrap" aria-hidden="true">
@@ -794,7 +741,7 @@
       </div>
     </div>
 
-    <div class="accordion-item" role="listitem">
+    <div class="accordion-item reveal reveal-delay-3" role="listitem">
       <button class="accordion-trigger" aria-expanded="false" aria-controls="policy-payment">
         <div class="accordion-trigger-left">
           <div class="accordion-icon-wrap" aria-hidden="true">
@@ -815,7 +762,7 @@
       </div>
     </div>
 
-    <div class="accordion-item" role="listitem">
+    <div class="accordion-item reveal reveal-delay-4" role="listitem">
       <button class="accordion-trigger" aria-expanded="false" aria-controls="policy-refuse">
         <div class="accordion-trigger-left">
           <div class="accordion-icon-wrap" aria-hidden="true">
@@ -857,36 +804,38 @@
 <footer class="footer" role="contentinfo">
   <div class="footer-grid">
     <div>
-      <img src="ElevationHairStudiosLogo.png" alt="Elevation Hair Studios" class="footer-logo" loading="lazy">
+      <img src="Brand Logo/Logo - EHS (without background).png" alt="Elevation Hair Studios" class="footer-logo" loading="lazy">
       <p class="footer-desc">Premium cuts and precise shearing in the heart of West Singapore. Your barber, your community.</p>
     </div>
-    <div class="footer-col">
-      <div class="footer-col-title">Navigation</div>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="services.html">Services</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="gallery.html">Gallery</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="book.html">Book Online</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <div class="footer-col-title">Contact</div>
-      <ul>
-        <li><a href="tel:88155167">8815 5167</a></li>
-        <li><a href="mailto:ElevationHairstudios@gmail.com">ElevationHairstudios@gmail.com</a></li>
-        <li><a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp Us</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <div class="footer-col-title">Visit Us</div>
-      <ul>
-        <li><a href="contact.html">68 Jln Jurong Kechil</a></li>
-        <li><a href="contact.html">#01-16, Singapore 596180</a></li>
-        <li><a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a></li>
-        <li><a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a></li>
-      </ul>
+    <div class="footer-cols-wrap">
+      <div class="footer-col">
+        <div class="footer-col-title">Navigation</div>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="book.html">Book Online</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Contact</div>
+        <ul>
+          <li><a href="tel:88155167">8815 5167</a></li>
+          <li><a href="mailto:ElevationHairstudios@gmail.com">ElevationHairstudios@gmail.com</a></li>
+          <li><a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Visit Us</div>
+        <ul>
+          <li><a href="contact.html">68 Jln Jurong Kechil</a></li>
+          <li><a href="contact.html">#01-16, Singapore 596180</a></li>
+          <li><a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
     </div>
   </div>
   <div class="footer-bottom">
@@ -895,6 +844,13 @@
       <a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a>
       <a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a>
       <a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+  <div style="border-top:1px solid var(--border); padding-top:16px; margin-top:16px; text-align:center;">
+    <div style="max-width:1160px; margin:0 auto;">
+      <span style="font-family:'Barlow',sans-serif; font-size:11px; color:var(--muted); opacity:0.6; letter-spacing:0.06em;">
+        Website Design by <a href="https://www.instagram.com/de.makers.space/" target="_blank" rel="noopener" style="color:var(--wood-lite); opacity:1; transition:color 0.2s ease;" onmouseover="this.style.color='var(--wood)'" onmouseout="this.style.color='var(--wood-lite)'">De Makers Space</a>
+      </span>
     </div>
   </div>
 </footer>
@@ -907,60 +863,30 @@
 <a href="book.html" class="float-book" id="floatBook">Book Now</a>
 
 <script>
-  // Hamburger / mobile nav
+  // Service row circle reveal (animated-profile-card style)
   (function() {
-    var hamburger = document.getElementById('hamburger');
-    var mobileNav = document.getElementById('mobileNav');
-    var mobileNavClose = document.getElementById('mobileNavClose');
-    function toggleNav(open) {
-      mobileNav.classList.toggle('open', open);
-      hamburger.classList.toggle('active', open);
-      hamburger.setAttribute('aria-expanded', String(open));
-      document.body.style.overflow = open ? 'hidden' : '';
-    }
-    hamburger.addEventListener('click', function() { toggleNav(true); });
-    mobileNavClose.addEventListener('click', function() { toggleNav(false); });
-    mobileNav.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', function() { toggleNav(false); }); });
+    var START = 'circle(44px at 60px 50%)';
+    var END   = 'circle(160% at 60px 50%)';
+    document.querySelectorAll('.service-row').forEach(function(row) {
+      var overlay = row.querySelector('.service-reveal-overlay');
+      if (!overlay) return;
+      var timer = null;
+      row.addEventListener('mouseenter', function() {
+        clearTimeout(timer);
+        overlay.style.pointerEvents = 'none';
+        overlay.style.transition = 'clip-path 0.8s cubic-bezier(0.87,0,0.13,1)';
+        overlay.style.clipPath = END;
+        timer = setTimeout(function() { overlay.style.pointerEvents = 'auto'; }, 820);
+      });
+      row.addEventListener('mouseleave', function() {
+        clearTimeout(timer);
+        overlay.style.pointerEvents = 'none';
+        overlay.style.transition = 'clip-path 1s cubic-bezier(0.16,1,0.3,1)';
+        overlay.style.clipPath = START;
+      });
+    });
   })();
 
-  // Custom cursor
-  const dot = document.getElementById('cursorDot');
-  const ring = document.getElementById('cursorRing');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-  document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
-    dot.style.transform = `translate(${mx - 4}px, ${my - 4}px)`;
-  });
-  (function animRing() {
-    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
-    ring.style.transform = `translate(${rx - 16}px, ${ry - 16}px)`;
-    requestAnimationFrame(animRing);
-  })();
-  document.querySelectorAll('a, button, [role="button"]').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      ring.style.width = '48px'; ring.style.height = '48px';
-      ring.style.borderColor = 'rgba(196,149,106,0.7)';
-    });
-    el.addEventListener('mouseleave', () => {
-      ring.style.width = '32px'; ring.style.height = '32px';
-      ring.style.borderColor = 'rgba(196,149,106,0.45)';
-    });
-  });
-
-  // Scroll reveal
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-  // Floating buttons
-  const fb = document.getElementById('floatBook');
-  const fw = document.getElementById('floatWa');
-  window.addEventListener('scroll', () => {
-    const show = window.scrollY > 300;
-    fb.classList.toggle('show', show);
-    fw.classList.toggle('show', show);
-  });
 
   // Accordion
   document.querySelectorAll('.accordion-trigger').forEach(btn => {
@@ -980,5 +906,6 @@
     });
   });
 </script>
+<script src="shared.js"></script>
 </body>
 </html>

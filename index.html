@@ -7,215 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
   <style>
-    :root {
-      --ink:        #0D0B09;
-      --charcoal:   #1A1714;
-      --panel:      #221E1A;
-      --wood-deep:  #5C3D22;
-      --wood:       #A0714F;
-      --wood-lite:  #C4956A;
-      --stone:      #8A8278;
-      --fog:        #C4BFB8;
-      --white:      #F5F2EE;
-      --muted:      #7A7268;
-      --border:     rgba(180,140,100,0.15);
-      --grad-wood:  linear-gradient(135deg, #5C3D22 0%, #A0714F 60%, #C4956A 100%);
-    }
-
-    /* ── Reset ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; }
-    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
-    body {
-      font-family: 'Barlow', sans-serif;
-      color: var(--ink);
-      background: var(--white);
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
-    img { display: block; max-width: 100%; }
-    a { text-decoration: none; color: inherit; }
-
-    /* ── Grain overlay ── */
-    body::after {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: 0.028;
-      pointer-events: none;
-      z-index: 9990;
-    }
-
-
-    /* ── Scroll reveal ── */
-    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
-    @media (prefers-reduced-motion: reduce) {
-      .reveal { opacity: 1; transform: none; transition: none; }
-      .aurora-layer { animation: none; }
-      .marquee-track { animation-play-state: paused; }
-    }
-
-    /* ── Hero word reveal (kept for underline animation timing) ── */
-    @keyframes wordReveal { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-
-    /* ── Floating book button ── */
-    .float-book {
-      position: fixed; bottom: 32px; right: 32px; z-index: 500;
-      background: var(--wood-lite); color: var(--ink);
-      font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 600;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      padding: 13px 22px;
-      opacity: 0; transform: translateY(16px);
-      transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
-      pointer-events: none;
-    }
-    .float-book.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    .float-book:hover { background: var(--wood); }
-
-    /* ── Floating WhatsApp button ── */
-    .float-wa {
-      position: fixed; bottom: 90px; right: 32px; z-index: 500;
-      width: 48px; height: 48px;
-      background: #25D366; color: #fff;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; transform: translateY(16px);
-      transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease, box-shadow 0.2s ease;
-      pointer-events: none;
-      box-shadow: 0 4px 18px rgba(37,211,102,0.35);
-    }
-    .float-wa.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    .float-wa:hover { background: #1ebe5d; box-shadow: 0 6px 24px rgba(37,211,102,0.45); }
-    .float-wa:focus-visible { outline: 2px solid #25D366; outline-offset: 3px; }
-    .float-wa svg { width: 24px; height: 24px; flex-shrink: 0; }
-    @media (max-width: 768px) { .float-wa { bottom: 78px; right: 20px; } }
-
-    /* ── Focus-visible states (keyboard accessibility) ── */
-    :focus-visible { outline: 2px solid var(--wood-lite); outline-offset: 3px; }
-    .hero-btn:focus-visible, .nav-book:focus-visible, .float-book:focus-visible,
-    .outline-btn:focus-visible, .mobile-nav-book:focus-visible {
-      outline: 2px solid var(--wood-lite); outline-offset: 3px;
-    }
-    .nav-links a:focus-visible { outline: 2px solid var(--wood-lite); outline-offset: 4px; color: var(--ink); }
-    /* Dark backgrounds need a lighter outline */
-    .mobile-nav a:focus-visible { outline-color: var(--fog); }
-    .footer-col ul a:focus-visible, .footer-social a:focus-visible { outline-color: var(--fog); }
-
-    /* ── Marquee ── */
-    .marquee-strip {
-      background: var(--charcoal);
-      overflow: hidden; padding: 13px 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .marquee-track {
-      display: flex; gap: 0; align-items: center; width: max-content;
-      animation: marquee 28s linear infinite;
-    }
-    .marquee-track span {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--stone); padding: 0 26px; white-space: nowrap;
-    }
-    .marquee-track .marquee-dot { padding: 0 4px; color: var(--wood) !important; font-size: 8px !important; }
-    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-    .marquee-strip:hover .marquee-track { animation-play-state: paused; }
-
-    /* ─────────────────────────────────────────────
-       NAV
-    ───────────────────────────────────────────── */
-    .nav {
-      position: sticky; top: 0; z-index: 200;
-      background: rgba(245,242,238,0.95);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center;
-      padding: 0 48px;
-      height: 80px;
-    }
-    .nav-logo {
-      display: flex; align-items: center; gap: 10px;
-      flex-shrink: 0; text-decoration: none;
-    }
-    .nav-logo img {
-      height: 52px; width: auto;
-      filter: brightness(0);
-      opacity: 0.85;
-    }
-    .nav-links {
-      flex: 1;
-      display: flex; align-items: center; justify-content: center;
-      gap: 36px; list-style: none;
-    }
-    .nav-links a {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 12px; font-weight: 500;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--stone);
-      transition: color 0.2s ease;
-    }
-    .nav-links a:hover { color: var(--ink); }
-    .nav-links a.active { color: var(--wood-lite); }
-    .nav-actions { flex-shrink: 0; }
-    .nav-book {
-      display: inline-block;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--ink);
-      background: var(--wood-lite);
-      padding: 10px 24px;
-      transition: background 0.2s ease;
-    }
-    .nav-book:hover { background: var(--wood); }
-
-    /* ── Hamburger ── */
-    .hamburger {
-      display: none; flex-direction: column; justify-content: center; gap: 5px;
-      padding: 6px; background: none; border: none; cursor: pointer; z-index: 300; margin-left: auto;
-    }
-    .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--ink); transition: transform 0.25s ease, opacity 0.25s ease; }
-    .hamburger.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-    .hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-    .hamburger.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-    @media (max-width: 768px) { .hamburger { display: flex; } }
-
-    /* ── Mobile nav ── */
-    .mobile-nav {
-      position: fixed; inset: 0; z-index: 250;
-      background: var(--ink);
-      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 36px;
-      opacity: 0; pointer-events: none; transform: translateY(-6px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .mobile-nav.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    .mobile-nav a {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 32px; font-weight: 300;
-      color: var(--white); letter-spacing: -0.01em; transition: color 0.2s ease;
-    }
-    .mobile-nav a:hover { color: var(--wood-lite); }
-    .mobile-nav-close {
-      position: absolute; top: 28px; right: 32px; background: none; border: none;
-      font-size: 30px; color: var(--stone); cursor: pointer; transition: color 0.2s ease; line-height: 1;
-    }
-    .mobile-nav-close:hover { color: var(--white); }
-    .mobile-nav-book {
-      font-family: 'Barlow Condensed', sans-serif !important;
-      font-size: 11px !important; font-weight: 600 !important;
-      letter-spacing: 0.16em !important; text-transform: uppercase !important;
-      color: var(--ink) !important; background: var(--wood-lite) !important;
-      padding: 12px 28px !important; font-style: normal !important;
-      transition: background 0.2s ease !important;
-    }
-    .mobile-nav-book:hover { background: var(--wood) !important; }
 
     /* ─────────────────────────────────────────────
        SCROLL EXPAND HERO
@@ -540,9 +333,69 @@
   .svc-tab-pane.active { grid-template-columns: 1fr; }
   .svc-tabs-bar-wrap { flex-wrap: wrap; width: 100%; }
 }
+
+/* Mobile tab dropdown */
+.svc-mobile-select {
+  display: none;
+  position: relative;
+  margin-bottom: 8px;
+  width: fit-content;
+}
+
 @media (max-width: 767px) {
   .services-section { padding: 0 20px 64px; }
+  .svc-tabs-bar-wrap { display: none; }
+  .svc-mobile-select { display: flex; }
 }
+.svc-mobile-trigger {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(17,17,17,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: none; border-radius: 14px;
+  padding: 10px 16px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--white) !important;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.svc-mobile-trigger span { color: var(--white) !important; }
+.svc-mobile-trigger svg {
+  width: 12px; height: 12px; flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+.svc-mobile-select.open .svc-mobile-trigger svg { transform: rotate(180deg); }
+.svc-mobile-list {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 100%;
+  background: rgba(17,17,17,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 12px;
+  border: 1px solid rgba(196,149,106,0.15);
+  overflow: hidden;
+  z-index: 50;
+}
+.svc-mobile-select.open .svc-mobile-list { display: flex; }
+.svc-mobile-option {
+  background: none; border: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(196,191,184,0.65);
+  padding: 12px 18px;
+  text-align: left; cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+.svc-mobile-option:hover { background: rgba(196,149,106,0.1); color: var(--white); }
+.svc-mobile-option.active { color: var(--wood-lite); }
 
 /* ── Portfolio Gallery (3D fan + marquee) ── */
 .pgallery-section { padding: 64px 48px 80px; border-top: 1px solid var(--border); }
@@ -667,45 +520,6 @@
 }
 @media (max-width: 767px) { .pgallery-section { padding: 48px 20px 64px; } }
 
-    /* ─────────────────────────────────────────────
-       FOOTER
-    ───────────────────────────────────────────── */
-    .footer { background: var(--ink); padding: 60px 48px 32px; border-top: 1px solid var(--border); }
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 2.2fr 1fr 1fr 1fr;
-      gap: 48px; margin-bottom: 48px;
-    }
-    .footer-logo { height: 42px; margin-bottom: 18px; filter: brightness(0) invert(1); opacity: 0.7; }
-    .footer-desc {
-      font-size: 13px; font-weight: 300;
-      line-height: 1.75; color: var(--muted);
-      max-width: 240px;
-    }
-    .footer-col-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px; font-weight: 600;
-      letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--wood); margin-bottom: 20px;
-    }
-    .footer-col ul { list-style: none; }
-    .footer-col ul li + li { margin-top: 10px; }
-    .footer-col ul a { font-size: 13px; font-weight: 300; color: var(--muted); transition: color 0.2s ease; }
-    .footer-col ul a:hover { color: var(--white); }
-    .footer-bottom {
-      border-top: 1px solid var(--border);
-      padding-top: 24px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .footer-copy { font-size: 11.5px; color: var(--muted); opacity: 0.7; }
-    .footer-social { display: flex; gap: 20px; }
-    .footer-social a {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
-      color: var(--muted);
-      transition: color 0.2s ease;
-    }
-    .footer-social a:hover { color: var(--wood-lite); }
 
     /* ─────────────────────────────────────────────
        RESPONSIVE
@@ -721,9 +535,16 @@
       .section-header { flex-direction: column; align-items: flex-start; gap: 20px; }
       .scroll-hero { min-height: calc(100vh - 64px); }
       .scroll-hero-revealed { padding: 0 24px 40px; }
-      .dark-wrap { padding-top: 0; }
+      .dark-wrap { padding-top: 72px; }
       .footer { padding: 48px 20px 24px; }
-      .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+      .footer-grid { display: flex; flex-direction: column; gap: 28px; }
+      .footer-grid > div:first-child { text-align: center; }
+      .footer-grid > div:first-child .footer-logo { margin: 0 auto 18px; }
+      .footer-grid > div:first-child .footer-desc { max-width: 100%; margin: 0 auto; }
+      .footer-cols-wrap { display: flex; flex-direction: row; gap: 12px; justify-content: space-between; }
+      .footer-cols-wrap .footer-col { flex: 1; min-width: 0; }
+      .footer-cols-wrap .footer-col ul a { font-size: 11px; }
+      .footer-cols-wrap .footer-col ul li + li { margin-top: 8px; }
       .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
       .float-book { bottom: 20px; right: 20px; }
     }
@@ -752,7 +573,7 @@
 
   <nav class="mobile-nav" id="mobileNav" role="dialog" aria-modal="true" aria-label="Site navigation">
     <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">&times;</button>
-    <a href="index.html" style="color:var(--wood-lite);">Home</a>
+    <a href="index.html" class="active">Home</a>
     <a href="services.html">Services</a>
     <a href="about.html">About</a>
     <a href="gallery.html">Gallery</a>
@@ -766,7 +587,7 @@
 
       <!-- Background: razor tools photo, fades as media expands -->
       <div id="scroll-hero-bg" class="scroll-hero-bg" aria-hidden="true">
-        <img src="Image of razer and barber picture/Razertocuthair.jpg" alt="">
+        <img src="Image of razer and barber picture/Razertocuthair.jpg" alt="" loading="lazy">
         <div class="scroll-hero-bg-dim"></div>
       </div>
 
@@ -806,13 +627,13 @@
       <span>Precision Fades</span><span class="marquee-dot"> · </span>
       <span>Modern Cuts</span><span class="marquee-dot"> · </span>
       <span>West Singapore</span><span class="marquee-dot"> · </span>
-      <span>7 Years of Craft</span><span class="marquee-dot"> · </span>
+      <span>10 Years of Craft</span><span class="marquee-dot"> · </span>
       <span>By Appointment Only</span><span class="marquee-dot"> · </span>
       <span>Book Online</span><span class="marquee-dot"> · </span>
       <span>Precision Fades</span><span class="marquee-dot"> · </span>
       <span>Modern Cuts</span><span class="marquee-dot"> · </span>
       <span>West Singapore</span><span class="marquee-dot"> · </span>
-      <span>7 Years of Craft</span><span class="marquee-dot"> · </span>
+      <span> Years of Craft</span><span class="marquee-dot"> · </span>
       <span>By Appointment Only</span><span class="marquee-dot"> · </span>
       <span>Book Online</span><span class="marquee-dot"> · </span>
     </div>
@@ -840,6 +661,21 @@
           <button class="svc-tab-btn" data-tab="beard">Cut &amp; Beard</button>
           <button class="svc-tab-btn" data-tab="sculpt">Beard Sculpting</button>
           <button class="svc-tab-btn" data-tab="elite">Elite Grooming</button>
+        </div>
+
+        <!-- Mobile dropdown (shown only on mobile) -->
+        <div class="svc-mobile-select" id="svcMobileSelect">
+          <button class="svc-mobile-trigger" id="svcMobileTrigger">
+            <span id="svcMobileLabel">Signature Cut</span>
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 6,8 10,4"/></svg>
+          </button>
+          <div class="svc-mobile-list" id="svcMobileList">
+            <button class="svc-mobile-option active" data-tab="sig">Signature Cut</button>
+            <button class="svc-mobile-option" data-tab="teen">Teen Cut</button>
+            <button class="svc-mobile-option" data-tab="beard">Cut &amp; Beard</button>
+            <button class="svc-mobile-option" data-tab="sculpt">Beard Sculpting</button>
+            <button class="svc-mobile-option" data-tab="elite">Elite Grooming</button>
+          </div>
         </div>
 
         <!-- Tab panels -->
@@ -925,28 +761,28 @@
         <!-- Desktop 3D fan -->
         <div class="pgallery-fan" id="pgFan" aria-hidden="true">
           <div class="pgallery-fan-row" id="pgFanRow">
-            <div class="pgallery-fan-item" data-idx="0"><div class="pgallery-fan-card"><img src="freshcut1.png" alt="Fresh cut" loading="lazy"></div></div>
-            <div class="pgallery-fan-item" data-idx="1"><div class="pgallery-fan-card"><img src="freshcut2.png" alt="Fresh cut" loading="lazy"></div></div>
-            <div class="pgallery-fan-item" data-idx="2"><div class="pgallery-fan-card"><img src="freshcut3.png" alt="Fresh cut" loading="lazy"></div></div>
-            <div class="pgallery-fan-item" data-idx="3"><div class="pgallery-fan-card"><img src="freshcut4.png" alt="Fresh cut" loading="lazy"></div></div>
-            <div class="pgallery-fan-item" data-idx="4"><div class="pgallery-fan-card"><img src="freshcut1.png" alt="Fresh cut" loading="lazy"></div></div>
-            <div class="pgallery-fan-item" data-idx="5"><div class="pgallery-fan-card"><img src="freshcut2.png" alt="Fresh cut" loading="lazy"></div></div>
-            <div class="pgallery-fan-item" data-idx="6"><div class="pgallery-fan-card"><img src="freshcut3.png" alt="Fresh cut" loading="lazy"></div></div>
-            <div class="pgallery-fan-item" data-idx="7"><div class="pgallery-fan-card"><img src="freshcut4.png" alt="Fresh cut" loading="lazy"></div></div>
+            <div class="pgallery-fan-item" data-idx="0"><div class="pgallery-fan-card"><img src="Fresh Cuts/freshcut1.png" alt="Fresh cut" loading="lazy"></div></div>
+            <div class="pgallery-fan-item" data-idx="1"><div class="pgallery-fan-card"><img src="Fresh Cuts/freshcut2.png" alt="Fresh cut" loading="lazy"></div></div>
+            <div class="pgallery-fan-item" data-idx="2"><div class="pgallery-fan-card"><img src="Fresh Cuts/freshcut3.png" alt="Fresh cut" loading="lazy"></div></div>
+            <div class="pgallery-fan-item" data-idx="3"><div class="pgallery-fan-card"><img src="Fresh Cuts/freshcut4.png" alt="Fresh cut" loading="lazy"></div></div>
+            <div class="pgallery-fan-item" data-idx="4"><div class="pgallery-fan-card"><img src="Fresh Cuts/freshcut5.png" alt="Fresh cut" loading="lazy"></div></div>
+            <div class="pgallery-fan-item" data-idx="5"><div class="pgallery-fan-card"><img src="Fresh Cuts/freshcut6.png" alt="Fresh cut" loading="lazy"></div></div>
+            <div class="pgallery-fan-item" data-idx="6"><div class="pgallery-fan-card"><img src="Fresh Cuts/freshcut5.png" alt="Fresh cut" loading="lazy"></div></div>
+            <div class="pgallery-fan-item" data-idx="7"><div class="pgallery-fan-card"><img src="Fresh Cuts/freshcut6.png" alt="Fresh cut" loading="lazy"></div></div>
           </div>
         </div>
 
         <!-- Mobile marquee -->
         <div class="pgallery-marquee" aria-hidden="true">
           <div class="pgallery-marquee-track">
-            <div class="pgallery-marquee-item"><img src="freshcut1.png" alt="" loading="lazy"></div>
-            <div class="pgallery-marquee-item"><img src="freshcut2.png" alt="" loading="lazy"></div>
-            <div class="pgallery-marquee-item"><img src="freshcut3.png" alt="" loading="lazy"></div>
-            <div class="pgallery-marquee-item"><img src="freshcut4.png" alt="" loading="lazy"></div>
-            <div class="pgallery-marquee-item"><img src="freshcut1.png" alt="" loading="lazy"></div>
-            <div class="pgallery-marquee-item"><img src="freshcut2.png" alt="" loading="lazy"></div>
-            <div class="pgallery-marquee-item"><img src="freshcut3.png" alt="" loading="lazy"></div>
-            <div class="pgallery-marquee-item"><img src="freshcut4.png" alt="" loading="lazy"></div>
+            <div class="pgallery-marquee-item"><img src="Fresh Cuts/freshcut1.png" alt="" loading="lazy"></div>
+            <div class="pgallery-marquee-item"><img src="Fresh Cuts/freshcut2.png" alt="" loading="lazy"></div>
+            <div class="pgallery-marquee-item"><img src="Fresh Cuts/freshcut3.png" alt="" loading="lazy"></div>
+            <div class="pgallery-marquee-item"><img src="Fresh Cuts/freshcut4.png" alt="" loading="lazy"></div>
+            <div class="pgallery-marquee-item"><img src="Fresh Cuts/freshcut5.png" alt="" loading="lazy"></div>
+            <div class="pgallery-marquee-item"><img src="Fresh Cuts/freshcut6.png" alt="" loading="lazy"></div>
+            <div class="pgallery-marquee-item"><img src="Fresh Cuts/freshcut1.png" alt="" loading="lazy"></div>
+            <div class="pgallery-marquee-item"><img src="Fresh Cuts/freshcut2.png" alt="" loading="lazy"></div>
           </div>
         </div>
 
@@ -960,33 +796,35 @@
           <img src="Brand Logo/Logo - EHS (without background).png" alt="Elevation Hair Studios" class="footer-logo">
           <p class="footer-desc">Premium cuts and precise shearing in the heart of West Singapore. Your barber, your community.</p>
         </div>
-        <div class="footer-col">
-          <div class="footer-col-title">Navigation</div>
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="services.html">Services</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="gallery.html">Gallery</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li><a href="book.html">Book Online</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <div class="footer-col-title">Contact</div>
-          <ul>
-            <li><a href="tel:88155167">8815 5167</a></li>
-            <li><a href="mailto:ElevationHairstudios@gmail.com">ElevationHairstudios@gmail.com</a></li>
-            <li><a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp Us</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <div class="footer-col-title">Visit Us</div>
-          <ul>
-            <li><a href="contact.html">68 Jln Jurong Kechil</a></li>
-            <li><a href="contact.html">#01-16, Singapore 596180</a></li>
-            <li><a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a></li>
-            <li><a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a></li>
-          </ul>
+        <div class="footer-cols-wrap">
+          <div class="footer-col">
+            <div class="footer-col-title">Navigation</div>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="services.html">Services</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="gallery.html">Gallery</a></li>
+              <li><a href="contact.html">Contact</a></li>
+              <li><a href="book.html">Book Online</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <div class="footer-col-title">Contact</div>
+            <ul>
+              <li><a href="tel:88155167">8815 5167</a></li>
+              <li><a href="mailto:ElevationHairstudios@gmail.com">ElevationHairstudios@gmail.com</a></li>
+              <li><a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp Us</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <div class="footer-col-title">Visit Us</div>
+            <ul>
+              <li><a href="contact.html">68 Jln Jurong Kechil</a></li>
+              <li><a href="contact.html">#01-16, Singapore 596180</a></li>
+              <li><a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a></li>
+              <li><a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a></li>
+            </ul>
+          </div>
         </div>
       </div>
       <div class="footer-bottom">
@@ -1014,36 +852,6 @@
   <a href="book.html" class="float-book" id="floatBook">Book Now</a>
 
 <script>
-  // Hamburger / mobile nav
-  (function() {
-    var hamburger = document.getElementById('hamburger');
-    var mobileNav = document.getElementById('mobileNav');
-    var mobileNavClose = document.getElementById('mobileNavClose');
-    function toggleNav(open) {
-      mobileNav.classList.toggle('open', open);
-      hamburger.classList.toggle('active', open);
-      hamburger.setAttribute('aria-expanded', String(open));
-      document.body.style.overflow = open ? 'hidden' : '';
-    }
-    hamburger.addEventListener('click', function() { toggleNav(true); });
-    mobileNavClose.addEventListener('click', function() { toggleNav(false); });
-    mobileNav.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', function() { toggleNav(false); }); });
-  })();
-
-  // Scroll reveal
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-  // Floating book button
-  const fb = document.getElementById('floatBook');
-  const fw = document.getElementById('floatWa');
-  window.addEventListener('scroll', () => {
-    const show = window.scrollY > 300;
-    fb.classList.toggle('show', show);
-    fw.classList.toggle('show', show);
-  });
 
   // ── Scroll Expand Hero ──
   (function() {
@@ -1193,6 +1001,10 @@
     var btns      = document.querySelectorAll('.svc-tab-btn');
     var indicator = document.getElementById('svcTabIndicator');
     var panes     = document.querySelectorAll('.svc-tab-pane');
+    var mobileSelect  = document.getElementById('svcMobileSelect');
+    var mobileTrigger = document.getElementById('svcMobileTrigger');
+    var mobileLabel   = document.getElementById('svcMobileLabel');
+    var mobileOpts    = document.querySelectorAll('.svc-mobile-option');
     if (!btns.length) return;
 
     function moveIndicator(btn) {
@@ -1201,23 +1013,47 @@
       indicator.style.width = btn.offsetWidth + 'px';
     }
 
-    function activate(btn) {
+    function activate(tab) {
       btns.forEach(function (b) { b.classList.remove('active'); });
       panes.forEach(function (p) { p.classList.remove('active'); });
-      btn.classList.add('active');
-      moveIndicator(btn);
-      var pane = document.getElementById('svc-pane-' + btn.dataset.tab);
+      mobileOpts.forEach(function (o) { o.classList.remove('active'); });
+
+      var btn = document.querySelector('.svc-tab-btn[data-tab="' + tab + '"]');
+      if (btn) { btn.classList.add('active'); moveIndicator(btn); }
+
+      var opt = document.querySelector('.svc-mobile-option[data-tab="' + tab + '"]');
+      if (opt) { opt.classList.add('active'); }
+
+      if (mobileLabel && opt) mobileLabel.textContent = opt.textContent;
+
+      var pane = document.getElementById('svc-pane-' + tab);
       if (pane) pane.classList.add('active');
     }
 
     btns.forEach(function (btn) {
-      btn.addEventListener('click', function () { activate(btn); });
+      btn.addEventListener('click', function () { activate(btn.dataset.tab); });
+    });
+
+    /* Mobile dropdown toggle */
+    if (mobileTrigger) {
+      mobileTrigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        mobileSelect.classList.toggle('open');
+      });
+    }
+    mobileOpts.forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        activate(opt.dataset.tab);
+        mobileSelect.classList.remove('open');
+      });
+    });
+    document.addEventListener('click', function () {
+      if (mobileSelect) mobileSelect.classList.remove('open');
     });
 
     /* initialise indicator on first active tab */
     var firstActive = document.querySelector('.svc-tab-btn.active');
     if (firstActive) {
-      /* defer one frame so layout is complete */
       requestAnimationFrame(function () { moveIndicator(firstActive); });
     }
 
@@ -1261,5 +1097,6 @@
   });
 })();
 </script>
+<script src="shared.js"></script>
 </body>
 </html>

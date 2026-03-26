@@ -7,234 +7,32 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
   <style>
-    :root {
-      --ink:        #0D0B09;
-      --charcoal:   #1A1714;
-      --panel:      #221E1A;
-      --wood-deep:  #5C3D22;
-      --wood:       #A0714F;
-      --wood-lite:  #C4956A;
-      --stone:      #8A8278;
-      --fog:        #C4BFB8;
-      --white:      #F5F2EE;
-      --muted:      #7A7268;
-      --border:     rgba(180,140,100,0.15);
-      --grad-wood:  linear-gradient(135deg, #5C3D22 0%, #A0714F 60%, #C4956A 100%);
-    }
-
-    /* ── Reset ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
-    /* Preserve native text cursor inside form elements */
-    input, textarea, select, [contenteditable] { cursor: text !important; }
-    html { font-size: 16px; }
-    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
-    body {
-      font-family: 'Barlow', sans-serif;
-      color: var(--ink);
-      background: var(--white);
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-      line-height: 1.7;
-    }
-    img { display: block; max-width: 100%; }
-    a { text-decoration: none; color: inherit; }
-
-    /* ── Grain overlay ── */
-    body::after {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: 0.028;
-      pointer-events: none;
-      z-index: 9990;
-    }
-
-    /* ── Custom cursor ── */
-    .cursor-dot {
-      position: fixed; top: 0; left: 0; z-index: 9999;
-      width: 8px; height: 8px;
-      background: var(--wood-lite); border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
-    }
-    .cursor-ring {
-      position: fixed; top: 0; left: 0; z-index: 9998;
-      width: 32px; height: 32px;
-      border: 1.5px solid rgba(196,149,106,0.45); border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
-    }
-    @media (hover: none) and (pointer: coarse) {
-      .cursor-dot, .cursor-ring { display: none; }
-      *, *::before, *::after { cursor: auto !important; }
-    }
-
-    /* ── Scroll reveal ── */
-    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
-    @media (prefers-reduced-motion: reduce) {
-      .reveal { opacity: 1; transform: none; transition: none; }
-    }
-
-    /* ── Floating book button — hidden on this page (user is already here) ── */
-    .float-book {
-      position: fixed; bottom: 32px; right: 32px; z-index: 500;
-      background: var(--wood-lite); color: var(--ink);
-      font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 600;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      padding: 13px 22px;
-      opacity: 0; transform: translateY(16px);
-      transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
-      pointer-events: none;
-      display: none; /* hidden — already on the booking page */
-    }
-    .float-book.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    .float-book:hover { background: var(--wood); }
-
-    /* ── Floating WhatsApp button ── */
-    .float-wa {
-      position: fixed; bottom: 32px; right: 32px; z-index: 500;
-      width: 48px; height: 48px;
-      background: #25D366; color: #fff;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; transform: translateY(16px);
-      transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease, box-shadow 0.2s ease;
-      pointer-events: none;
-      box-shadow: 0 4px 18px rgba(37,211,102,0.35);
-    }
-    .float-wa.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    .float-wa:hover { background: #1ebe5d; box-shadow: 0 6px 24px rgba(37,211,102,0.45); }
-    .float-wa:focus-visible { outline: 2px solid #25D366; outline-offset: 3px; }
-    .float-wa svg { width: 24px; height: 24px; flex-shrink: 0; }
-    @media (max-width: 768px) { .float-wa { bottom: 20px; right: 20px; } }
-
-    /* ── Focus-visible states (keyboard accessibility) ── */
-    :focus-visible { outline: 2px solid var(--wood-lite); outline-offset: 3px; }
-    .nav-book:focus-visible, .mobile-nav-book:focus-visible {
-      outline: 2px solid var(--wood-lite); outline-offset: 3px;
-    }
-    .nav-links a:focus-visible { outline: 2px solid var(--wood-lite); outline-offset: 4px; color: var(--ink); }
-    .mobile-nav a:focus-visible { outline-color: var(--fog); }
-    .footer-col ul a:focus-visible, .footer-social a:focus-visible { outline-color: var(--fog); }
-
-    /* ─────────────────────────────────────────────
-       NAV
-    ───────────────────────────────────────────── */
-    .nav {
-      position: sticky; top: 0; z-index: 200;
-      background: rgba(245,242,238,0.95);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center;
-      padding: 0 48px;
-      height: 80px;
-    }
-    .nav-logo {
-      display: flex; align-items: center; gap: 10px;
-      flex-shrink: 0; text-decoration: none;
-    }
-    .nav-logo img {
-      height: 52px; width: auto;
-      filter: brightness(0);
-      opacity: 0.85;
-    }
-    .nav-links {
-      flex: 1;
-      display: flex; align-items: center; justify-content: center;
-      gap: 36px; list-style: none;
-    }
-    .nav-links a {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 12px; font-weight: 500;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--stone);
-      transition: color 0.2s ease;
-    }
-    .nav-links a:hover { color: var(--ink); }
-    .nav-links a.active { color: var(--wood-lite); }
-    .nav-actions { flex-shrink: 0; }
-    .nav-book {
-      display: inline-block;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--ink);
-      background: var(--wood-lite);
-      padding: 10px 24px;
-      transition: background 0.2s ease;
-    }
-    .nav-book:hover { background: var(--wood); }
-
-    /* ── Hamburger ── */
-    .hamburger {
-      display: none; flex-direction: column; justify-content: center; gap: 5px;
-      padding: 6px; background: none; border: none; cursor: pointer; z-index: 300; margin-left: auto;
-    }
-    .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--ink); transition: transform 0.25s ease, opacity 0.25s ease; }
-    .hamburger.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-    .hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-    .hamburger.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-    @media (max-width: 768px) { .hamburger { display: flex; } }
-
-    /* ── Mobile nav ── */
-    .mobile-nav {
-      position: fixed; inset: 0; z-index: 250;
-      background: var(--ink);
-      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 36px;
-      opacity: 0; pointer-events: none; transform: translateY(-6px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .mobile-nav.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    .mobile-nav a {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 32px; font-weight: 300;
-      color: var(--white); letter-spacing: -0.01em; transition: color 0.2s ease;
-    }
-    .mobile-nav a:hover { color: var(--wood-lite); }
-    .mobile-nav-close {
-      position: absolute; top: 28px; right: 32px; background: none; border: none;
-      font-size: 30px; color: var(--stone); cursor: pointer; transition: color 0.2s ease; line-height: 1;
-    }
-    .mobile-nav-close:hover { color: var(--white); }
-    .mobile-nav-book {
-      font-family: 'Barlow Condensed', sans-serif !important;
-      font-size: 11px !important; font-weight: 600 !important;
-      letter-spacing: 0.16em !important; text-transform: uppercase !important;
-      color: var(--ink) !important; background: var(--wood-lite) !important;
-      padding: 12px 28px !important; font-style: normal !important;
-      transition: background 0.2s ease !important;
-    }
-    .mobile-nav-book:hover { background: var(--wood) !important; }
 
     /* ─────────────────────────────────────────────
        HERO
     ───────────────────────────────────────────── */
     .hero {
-      background: var(--charcoal);
-      padding: 80px 48px 88px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
+      padding: 130px 48px 110px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      position: relative; overflow: hidden; min-height: 580px;
     }
-    .hero::before {
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: 62% center;
+      display: block;
+    }
+    .hero-bg::after {
       content: '';
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse 55% 80% at 5% 50%, rgba(196,149,106,0.09) 0%, transparent 65%),
-        radial-gradient(ellipse 35% 55% at 90% 25%, rgba(196,149,106,0.05) 0%, transparent 70%);
-      pointer-events: none;
+        linear-gradient(to bottom, rgba(13,11,9,0.15) 0%, rgba(13,11,9,0.5) 55%, rgba(13,11,9,0.82) 100%),
+        linear-gradient(to right, rgba(13,11,9,0.45) 0%, transparent 60%);
     }
     .hero-left { position: relative; z-index: 1; }
     .hero-eyebrow {
@@ -251,16 +49,16 @@
       line-height: 1.1;
       letter-spacing: -0.02em;
     }
-    .hero-right { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 36px; }
     .hero-sub {
       font-family: 'Cormorant Garamond', serif;
       font-size: 18px;
       font-weight: 300;
       font-style: italic;
-      color: rgba(245,242,238,0.5);
+      color: rgba(245,242,238,0.75);
       line-height: 1.55;
-      border-left: 2px solid rgba(196,149,106,0.4);
+      border-left: 2px solid rgba(196,149,106,0.55);
       padding-left: 24px;
+      margin-top: 32px;
     }
     .step-indicator {
       display: flex;
@@ -656,52 +454,13 @@
       line-height: 1.6;
     }
 
-    /* ─────────────────────────────────────────────
-       FOOTER
-    ───────────────────────────────────────────── */
-    .footer { background: var(--ink); padding: 60px 48px 32px; border-top: 1px solid var(--border); }
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 2.2fr 1fr 1fr 1fr;
-      gap: 48px; margin-bottom: 48px;
-    }
-    .footer-logo { height: 42px; margin-bottom: 18px; filter: brightness(0) invert(1); opacity: 0.7; }
-    .footer-desc {
-      font-size: 13px; font-weight: 300;
-      line-height: 1.75; color: var(--muted);
-      max-width: 240px;
-    }
-    .footer-col-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px; font-weight: 600;
-      letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--wood); margin-bottom: 20px;
-    }
-    .footer-col ul { list-style: none; }
-    .footer-col ul li + li { margin-top: 10px; }
-    .footer-col ul a { font-size: 13px; font-weight: 300; color: var(--muted); transition: color 0.2s ease; }
-    .footer-col ul a:hover { color: var(--white); }
-    .footer-bottom {
-      border-top: 1px solid var(--border);
-      padding-top: 24px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .footer-copy { font-size: 11.5px; color: var(--muted); opacity: 0.7; }
-    .footer-social { display: flex; gap: 20px; }
-    .footer-social a {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
-      color: var(--muted);
-      transition: color 0.2s ease;
-    }
-    .footer-social a:hover { color: var(--wood-lite); }
 
     /* ─────────────────────────────────────────────
        RESPONSIVE
     ───────────────────────────────────────────── */
     @media (max-width: 1024px) {
       .nav { padding: 0 32px; }
-      .hero { padding: 72px 32px 80px; gap: 48px; }
+      .hero { padding: 100px 32px 80px; }
       .form-section { padding: 64px 32px 80px; }
       .info-band { padding: 52px 32px; }
       .info-item { padding: 0 24px; }
@@ -713,7 +472,8 @@
       .nav-links { display: none; }
       .nav-actions { display: none; }
       .nav-logo img { height: 38px; }
-      .hero { grid-template-columns: 1fr; gap: 36px; padding: 60px 24px 72px; }
+      .hero { padding: 80px 24px 72px; }
+      .hero-bg img { object-position: 72% center; }
       .step-indicator { flex-wrap: wrap; gap: 12px; }
       .step-arrow { display: none; }
       .form-section { padding: 52px 24px 72px; }
@@ -725,7 +485,14 @@
       .info-item { border-right: none; padding: 0; border-bottom: 1px solid rgba(245,242,238,0.07); padding-bottom: 32px; }
       .info-item:last-child { border-bottom: none; padding-bottom: 0; }
       .footer { padding: 48px 20px 24px; }
-      .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+      .footer-grid { display: flex; flex-direction: column; gap: 28px; }
+      .footer-grid > div:first-child { text-align: center; }
+      .footer-grid > div:first-child .footer-logo { margin: 0 auto 18px; }
+      .footer-grid > div:first-child .footer-desc { max-width: 100%; margin: 0 auto; }
+      .footer-cols-wrap { display: flex; flex-direction: row; gap: 12px; justify-content: space-between; }
+      .footer-cols-wrap .footer-col { flex: 1; min-width: 0; }
+      .footer-cols-wrap .footer-col ul a { font-size: 11px; }
+      .footer-cols-wrap .footer-col ul li + li { margin-top: 8px; }
       .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
     }
     @media (max-width: 480px) {
@@ -735,13 +502,11 @@
   </style>
 </head>
 <body>
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
 
   <!-- NAV -->
   <nav class="nav" role="navigation" aria-label="Main navigation">
     <a href="index.html" class="nav-logo" aria-label="Elevation Hair Studios – Home">
-      <img src="ElevationHairStudiosLogo.png" alt="Elevation Hair Studios">
+      <img src="Brand Logo/Logo - EHS (without background).png" alt="Elevation Hair Studios">
     </a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
@@ -765,18 +530,19 @@
     <a href="about.html">About</a>
     <a href="gallery.html">Gallery</a>
     <a href="contact.html">Contact</a>
-    <a href="book.html" style="color:var(--wood-lite);" class="mobile-nav-book">Book Online</a>
+    <a href="book.html" class="mobile-nav-book">Book Online</a>
   </nav>
 
   <!-- HERO -->
   <section class="hero" aria-label="Book your appointment">
+    <div class="hero-bg" aria-hidden="true">
+      <img src="background for service hero.jpg" alt="" loading="lazy">
+    </div>
     <div class="hero-left">
       <div class="hero-eyebrow">Book Your Visit</div>
       <h1 class="hero-heading">Book Your<br>Appointment.</h1>
-    </div>
-    <div class="hero-right">
       <p class="hero-sub">Select your service, share your details, and we'll confirm your spot.</p>
-      <div class="step-indicator" role="list" aria-label="Booking steps">
+      <div class="step-indicator" role="list" aria-label="Booking steps" style="margin-top:28px;">
         <div class="step" role="listitem">
           <div class="step-num active">1</div>
           <span class="step-label active">Choose Service</span>
@@ -1002,36 +768,38 @@
   <footer class="footer" role="contentinfo">
     <div class="footer-grid">
       <div>
-        <img src="ElevationHairStudiosLogo.png" alt="Elevation Hair Studios" class="footer-logo" loading="lazy">
+        <img src="Brand Logo/Logo - EHS (without background).png" alt="Elevation Hair Studios" class="footer-logo" loading="lazy">
         <p class="footer-desc">Premium cuts and precise shearing in the heart of West Singapore. Your barber, your community.</p>
       </div>
-      <div class="footer-col">
-        <div class="footer-col-title">Navigation</div>
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="services.html">Services</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="gallery.html">Gallery</a></li>
-          <li><a href="contact.html">Contact</a></li>
-          <li><a href="book.html">Book Online</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-title">Contact</div>
-        <ul>
-          <li><a href="tel:88155167">8815 5167</a></li>
-          <li><a href="mailto:ElevationHairstudios@gmail.com">ElevationHairstudios@gmail.com</a></li>
-          <li><a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp Us</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-title">Visit Us</div>
-        <ul>
-          <li><a href="contact.html">68 Jln Jurong Kechil</a></li>
-          <li><a href="contact.html">#01-16, Singapore 596180</a></li>
-          <li><a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a></li>
-          <li><a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a></li>
-        </ul>
+      <div class="footer-cols-wrap">
+        <div class="footer-col">
+          <div class="footer-col-title">Navigation</div>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="book.html">Book Online</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Contact</div>
+          <ul>
+            <li><a href="tel:88155167">8815 5167</a></li>
+            <li><a href="mailto:ElevationHairstudios@gmail.com">ElevationHairstudios@gmail.com</a></li>
+            <li><a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Visit Us</div>
+          <ul>
+            <li><a href="contact.html">68 Jln Jurong Kechil</a></li>
+            <li><a href="contact.html">#01-16, Singapore 596180</a></li>
+            <li><a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a></li>
+            <li><a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a></li>
+          </ul>
+        </div>
       </div>
     </div>
     <div class="footer-bottom">
@@ -1042,6 +810,11 @@
         <a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp</a>
       </div>
     </div>
+    <div style="border-top:1px solid var(--border); padding-top:16px; margin-top:16px; text-align:center;">
+      <span style="font-family:'Barlow',sans-serif; font-size:11px; color:var(--muted); opacity:0.6; letter-spacing:0.06em;">
+        Website Design by <a href="https://www.instagram.com/de.makers.space/" target="_blank" rel="noopener" style="color:var(--wood-lite); opacity:1; transition:color 0.2s ease;" onmouseover="this.style.color='var(--wood)'" onmouseout="this.style.color='var(--wood-lite)'">De Makers Space</a>
+      </span>
+    </div>
   </footer>
 
   <a href="https://wa.me/6588155167" target="_blank" rel="noopener" class="float-wa" id="floatWa" aria-label="Chat with us on WhatsApp">
@@ -1051,62 +824,7 @@
   </a>
   <a href="book.html" class="float-book" id="floatBook">Book Now</a>
 
-<script>
-  // Hamburger / mobile nav
-  (function() {
-    var hamburger = document.getElementById('hamburger');
-    var mobileNav = document.getElementById('mobileNav');
-    var mobileNavClose = document.getElementById('mobileNavClose');
-    function toggleNav(open) {
-      mobileNav.classList.toggle('open', open);
-      hamburger.classList.toggle('active', open);
-      hamburger.setAttribute('aria-expanded', String(open));
-      document.body.style.overflow = open ? 'hidden' : '';
-    }
-    hamburger.addEventListener('click', function() { toggleNav(true); });
-    mobileNavClose.addEventListener('click', function() { toggleNav(false); });
-    mobileNav.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', function() { toggleNav(false); }); });
-  })();
-
-  // Custom cursor
-  const dot = document.getElementById('cursorDot');
-  const ring = document.getElementById('cursorRing');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-  document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
-    dot.style.transform = `translate(${mx - 4}px, ${my - 4}px)`;
-  });
-  (function animRing() {
-    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
-    ring.style.transform = `translate(${rx - 16}px, ${ry - 16}px)`;
-    requestAnimationFrame(animRing);
-  })();
-  document.querySelectorAll('a, button, [role="button"]').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      ring.style.width = '48px'; ring.style.height = '48px';
-      ring.style.borderColor = 'rgba(196,149,106,0.7)';
-    });
-    el.addEventListener('mouseleave', () => {
-      ring.style.width = '32px'; ring.style.height = '32px';
-      ring.style.borderColor = 'rgba(196,149,106,0.45)';
-    });
-  });
-
-  // Scroll reveal
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-  // Floating buttons
-  const fb = document.getElementById('floatBook');
-  const fw = document.getElementById('floatWa');
-  window.addEventListener('scroll', () => {
-    const show = window.scrollY > 300;
-    fb.classList.toggle('show', show);
-    fw.classList.toggle('show', show);
-  });
-</script>
 <script src="animated-underline.js"></script>
+<script src="shared.js"></script>
 </body>
 </html>
