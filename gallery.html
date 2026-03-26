@@ -147,68 +147,26 @@
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-auto-rows: 240px;
+      grid-auto-rows: auto;
       gap: 12px;
     }
     .gallery-card {
       position: relative;
       overflow: hidden;
       cursor: pointer;
+      background: var(--ink);
     }
     .gallery-card img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
       display: block;
       filter: grayscale(5%) brightness(0.95);
       transition: transform 0.45s ease;
     }
     .gallery-card:hover img { transform: scale(1.04); }
-    .gallery-card-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0);
-      display: flex;
-      align-items: flex-end;
-      padding: 20px;
-      transition: background 0.3s ease;
-    }
-    .gallery-card:hover .gallery-card-overlay {
-      background: rgba(0,0,0,0.52);
-    }
-    .gallery-cat-badge {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--ink);
-      background: var(--wood-lite);
-      padding: 5px 13px;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .gallery-card:hover .gallery-cat-badge {
-      opacity: 1;
-      transform: translateY(0);
-    }
 
-    /* Tall cards (2:3) — span 2 rows */
-    .card-tall { grid-row: span 2; }
-    /* Wide cards (3:2) — span 2 columns */
+    /* Wide cards — span 2 columns */
     .card-wide { grid-column: span 2; }
-
-    /* Gallery hover overlay */
-    .gallery-card::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(196,149,106,0.5) 0%, rgba(0,0,0,0.4) 100%);
-      opacity: 0;
-      transition: opacity 0.35s ease;
-      pointer-events: none;
-    }
-    .gallery-card:hover::after { opacity: 1; }
 
     /* ─────────────────────────────────────────────
        SOCIAL FOLLOW BAND
@@ -344,7 +302,7 @@
       .hero-heading { font-size: 40px; }
       .hero-desc { font-size: 17px; margin-top: 20px; max-width: 320px; }
       .gallery-section { padding: 56px 24px 64px; }
-      .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: auto; }
       .card-wide { grid-column: span 2; }
       .card-tall { grid-row: span 2; }
       .instagram-band { padding: 56px 24px; }
@@ -367,7 +325,7 @@
     }
     @media (max-width: 480px) {
       .hero-heading { font-size: 34px; }
-      .gallery-grid { grid-template-columns: 1fr; grid-auto-rows: 260px; }
+      .gallery-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
       .card-wide { grid-column: span 1; }
       .card-tall { grid-row: span 1; }
       .footer-grid { grid-template-columns: 1fr; }
@@ -386,6 +344,7 @@
       <li><a href="services.html">Services</a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="gallery.html" class="active">Gallery</a></li>
+      <li><a href="product.html">Shop</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
     <div class="nav-actions">
@@ -402,6 +361,7 @@
     <a href="services.html">Services</a>
     <a href="about.html">About</a>
     <a href="gallery.html" class="active">Gallery</a>
+    <a href="product.html">Shop</a>
     <a href="contact.html">Contact</a>
     <a href="book.html" class="mobile-nav-book">Book Online</a>
   </nav>
@@ -437,58 +397,32 @@
     </div>
 
     <div class="gallery-grid">
-      <!-- Row 1: tall | square | square -->
-      <div class="gallery-card card-tall reveal reveal-delay-1">
-        <img src="https://placehold.co/600x960/221E1A/555250" alt="Precision fade haircut by Elevation Hair Studios" loading="lazy">
-        <div class="gallery-card-overlay">
-          <span class="gallery-cat-badge">Fade</span>
-        </div>
+      <div class="gallery-card reveal reveal-delay-1">
+        <img src="PictureForGallery/p1.JPG" alt="Precision fade haircut by Elevation Hair Studios" loading="lazy">
       </div>
       <div class="gallery-card reveal reveal-delay-2">
-        <img src="https://placehold.co/600x480/2D2A27/666360" alt="Modern skin fade at Elevation Hair Studios" loading="lazy">
-        <div class="gallery-card-overlay">
-          <span class="gallery-cat-badge">Skin Fade</span>
-        </div>
+        <img src="PictureForGallery/p2.JPG" alt="Modern skin fade at Elevation Hair Studios" loading="lazy">
       </div>
       <div class="gallery-card reveal reveal-delay-3">
-        <img src="https://placehold.co/600x480/221E1A/555250" alt="Beard design and sculpting at Elevation Hair Studios" loading="lazy">
-        <div class="gallery-card-overlay">
-          <span class="gallery-cat-badge">Beard Work</span>
-        </div>
+        <img src="PictureForGallery/p3.JPG" alt="Beard design and sculpting at Elevation Hair Studios" loading="lazy">
       </div>
-
-      <!-- Row 2: square | square | tall -->
       <div class="gallery-card reveal reveal-delay-1">
-        <img src="https://placehold.co/600x480/2D2A27/666360" alt="Classic scissor cut at Elevation Hair Studios" loading="lazy">
-        <div class="gallery-card-overlay">
-          <span class="gallery-cat-badge">Classic Cut</span>
-        </div>
+        <img src="PictureForGallery/p4.JPG" alt="Classic scissor cut at Elevation Hair Studios" loading="lazy">
       </div>
       <div class="gallery-card reveal reveal-delay-2">
-        <img src="https://placehold.co/600x480/221E1A/555250" alt="Low fade haircut at Elevation Hair Studios" loading="lazy">
-        <div class="gallery-card-overlay">
-          <span class="gallery-cat-badge">Fade</span>
-        </div>
+        <img src="PictureForGallery/p5.JPG" alt="Low fade haircut at Elevation Hair Studios" loading="lazy">
       </div>
-      <div class="gallery-card card-tall reveal reveal-delay-3">
-        <img src="https://placehold.co/600x960/2D2A27/666360" alt="Full grooming experience at Elevation Hair Studios" loading="lazy">
-        <div class="gallery-card-overlay">
-          <span class="gallery-cat-badge">Skin Fade</span>
-        </div>
+      <div class="gallery-card reveal reveal-delay-3">
+        <img src="PictureForGallery/p6.JPG" alt="Full grooming experience at Elevation Hair Studios" loading="lazy">
       </div>
-
-      <!-- Row 3: wide | square -->
-      <div class="gallery-card card-wide reveal reveal-delay-1">
-        <img src="https://placehold.co/1200x480/221E1A/555250" alt="Signature haircut and beard design at Elevation Hair Studios" loading="lazy">
-        <div class="gallery-card-overlay">
-          <span class="gallery-cat-badge">Signature Cut + Beard</span>
-        </div>
+      <div class="gallery-card reveal reveal-delay-1">
+        <img src="PictureForGallery/p7.JPG" alt="Signature haircut and beard design at Elevation Hair Studios" loading="lazy">
       </div>
       <div class="gallery-card reveal reveal-delay-2">
-        <img src="https://placehold.co/600x480/2D2A27/666360" alt="Textured crop haircut at Elevation Hair Studios" loading="lazy">
-        <div class="gallery-card-overlay">
-          <span class="gallery-cat-badge">Classic Cut</span>
-        </div>
+        <img src="PictureForGallery/p8.JPG" alt="Textured crop haircut at Elevation Hair Studios" loading="lazy">
+      </div>
+      <div class="gallery-card reveal reveal-delay-3">
+        <img src="PictureForGallery/p9.jpg" alt="Fresh cut at Elevation Hair Studios" loading="lazy">
       </div>
     </div>
   </section>
@@ -560,6 +494,7 @@
             <li><a href="services.html">Services</a></li>
             <li><a href="about.html">About</a></li>
             <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="product.html">Shop</a></li>
             <li><a href="contact.html">Contact</a></li>
             <li><a href="book.html">Book Online</a></li>
           </ul>
