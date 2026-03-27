@@ -140,7 +140,13 @@
     .hero-sub {
       font-size: 14px; font-weight: 300;
       line-height: 1.85; color: var(--muted);
-      max-width: 360px; margin-bottom: 40px;
+      max-width: 360px; margin-bottom: 16px;
+    }
+    .hero-divider {
+      border: none;
+      border-top: 1px solid rgba(196,149,106,0.35);
+      width: 48px;
+      margin: 0 0 16px 0;
     }
     .hero-btn {
       display: inline-block; align-self: flex-start;
@@ -529,10 +535,10 @@
       .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
     }
     @media (max-width: 768px) {
-      .nav { padding: 0 20px; height: 64px; }
+      .nav { padding: 0 20px; height: 88px; }
       .nav-links { display: none; }
       .nav-actions { display: none; }
-      .nav-logo img { height: 38px; }
+      .nav-logo img { height: 66px; }
       .section-header { flex-direction: column; align-items: flex-start; gap: 20px; }
       .scroll-hero { min-height: calc(100vh - 64px); }
       .scroll-hero-revealed { padding: 0 24px 40px; }
@@ -610,14 +616,13 @@
 
       <!-- Content revealed below image after full expansion -->
       <div id="scroll-hero-revealed" class="scroll-hero-revealed">
-        <div class="hero-eyebrow">West Singapore &middot; Precision Grooming</div>
         <h1 class="hero-heading">
           <span>Where Authenticity</span><br>
           <span class="hero-underline-wrap" style="--underline-delay:0.3s">Meets Artistry.</span>
         </h1>
-        <p class="hero-sub">
-          Ten years of craft. One mission: Your best look. Experience the perfect blend of modern style and precision barbering. At Elevation, the chair is yours, and the detail is everything.
-        </p>
+        <p class="hero-sub">Ten years of craft. One mission: Your best look.</p>
+        <hr class="hero-divider">
+        <p class="hero-sub">Experience the perfect blend of modern style and precision barbering. At Elevation, the chair is yours, and the detail is everything.</p>
         <a href="book.html" class="hero-btn">Book Appointment</a>
       </div>
 
