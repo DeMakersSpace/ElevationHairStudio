@@ -144,29 +144,28 @@
     }
 
     /* GALLERY GRID */
-    .gallery-grid {
+    .goey-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-auto-rows: auto;
       gap: 12px;
     }
-    .gallery-card {
+
+    .goey-figure {
       position: relative;
       overflow: hidden;
       cursor: pointer;
       background: var(--ink);
     }
-    .gallery-card img {
+
+    .goey-img-wrap img {
       width: 100%;
-      height: auto;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
       display: block;
       filter: grayscale(5%) brightness(0.95);
       transition: transform 0.45s ease;
     }
-    .gallery-card:hover img { transform: scale(1.04); }
-
-    /* Wide cards — span 2 columns */
-    .card-wide { grid-column: span 2; }
+    .goey-figure:hover .goey-img-wrap img { transform: scale(1.04); }
 
     /* ─────────────────────────────────────────────
        SOCIAL FOLLOW BAND
@@ -293,18 +292,16 @@
       .footer { padding: 60px 32px 32px; }
     }
     @media (max-width: 768px) {
-      .nav { padding: 0 20px; height: 64px; }
+      .nav { padding: 0 20px; height: 96px; }
       .nav-links { display: none; }
       .nav-actions { display: none; }
-      .nav-logo img { height: 38px; }
+      .nav-logo img { height: 78px; }
       .hero { padding: 48px 24px 36px; min-height: 300px; }
       .hero-bg img { object-position: 72% center; }
       .hero-heading { font-size: 40px; }
       .hero-desc { font-size: 17px; margin-top: 20px; max-width: 320px; }
       .gallery-section { padding: 56px 24px 64px; }
-      .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: auto; }
-      .card-wide { grid-column: span 2; }
-      .card-tall { grid-row: span 2; }
+      .goey-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .instagram-band { padding: 56px 24px; }
       .ig-handle { font-size: 22px; }
       .clip-link-box { padding: 52px 24px; }
@@ -325,9 +322,7 @@
     }
     @media (max-width: 480px) {
       .hero-heading { font-size: 34px; }
-      .gallery-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
-      .card-wide { grid-column: span 1; }
-      .card-tall { grid-row: span 1; }
+      .goey-grid { grid-template-columns: 1fr; gap: 6px; }
       .footer-grid { grid-template-columns: 1fr; }
     }
   </style>
@@ -396,34 +391,82 @@
       </div>
     </div>
 
-    <div class="gallery-grid">
-      <div class="gallery-card reveal reveal-delay-1">
-        <img src="PictureForGallery/p1.JPG" alt="Precision fade haircut by Elevation Hair Studios" loading="lazy">
-      </div>
-      <div class="gallery-card reveal reveal-delay-2">
-        <img src="PictureForGallery/p2.JPG" alt="Modern skin fade at Elevation Hair Studios" loading="lazy">
-      </div>
-      <div class="gallery-card reveal reveal-delay-3">
-        <img src="PictureForGallery/p3.JPG" alt="Beard design and sculpting at Elevation Hair Studios" loading="lazy">
-      </div>
-      <div class="gallery-card reveal reveal-delay-1">
-        <img src="PictureForGallery/p4.JPG" alt="Classic scissor cut at Elevation Hair Studios" loading="lazy">
-      </div>
-      <div class="gallery-card reveal reveal-delay-2">
-        <img src="PictureForGallery/p5.JPG" alt="Low fade haircut at Elevation Hair Studios" loading="lazy">
-      </div>
-      <div class="gallery-card reveal reveal-delay-3">
-        <img src="PictureForGallery/p6.JPG" alt="Full grooming experience at Elevation Hair Studios" loading="lazy">
-      </div>
-      <div class="gallery-card reveal reveal-delay-1">
-        <img src="PictureForGallery/p7.JPG" alt="Signature haircut and beard design at Elevation Hair Studios" loading="lazy">
-      </div>
-      <div class="gallery-card reveal reveal-delay-2">
-        <img src="PictureForGallery/p8.JPG" alt="Textured crop haircut at Elevation Hair Studios" loading="lazy">
-      </div>
-      <div class="gallery-card reveal reveal-delay-3">
-        <img src="PictureForGallery/p9.jpg" alt="Fresh cut at Elevation Hair Studios" loading="lazy">
-      </div>
+    <div class="goey-grid">
+      <!-- Row 1 -->
+      <figure class="goey-figure reveal reveal-delay-1">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/p1.JPG" alt="Precision fade haircut by Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <figure class="goey-figure reveal reveal-delay-2">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/p2.JPG" alt="Modern skin fade at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <figure class="goey-figure reveal reveal-delay-3">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/p3.JPG" alt="Beard design and sculpting at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <!-- Row 2 -->
+      <figure class="goey-figure reveal reveal-delay-1">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/p4.JPG" alt="Classic scissor cut at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <figure class="goey-figure reveal reveal-delay-2">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/p5.JPG" alt="Low fade haircut at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <figure class="goey-figure reveal reveal-delay-3">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/p6.JPG" alt="Full grooming experience at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <!-- Row 3 -->
+      <figure class="goey-figure reveal reveal-delay-1">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/p8.JPG" alt="Textured crop at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <figure class="goey-figure reveal reveal-delay-2">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/p9.jpg" alt="Fresh cut at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <figure class="goey-figure reveal reveal-delay-3">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/freshcut1.png" alt="Fresh cut style at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <!-- Row 4 -->
+      <figure class="goey-figure reveal reveal-delay-1">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/freshcut2.png" alt="Sharp fade at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <figure class="goey-figure reveal reveal-delay-2">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/freshcut3.png" alt="Groomed style at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <figure class="goey-figure reveal reveal-delay-3">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/freshcut4.png" alt="Signature cut at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <!-- Row 5 -->
+      <figure class="goey-figure reveal reveal-delay-1">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/freshcut5.png" alt="Precision styling at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
+      <figure class="goey-figure reveal reveal-delay-2">
+        <div class="goey-img-wrap">
+          <img src="PictureForGallery/freshcut6.png" alt="Clean finish at Elevation Hair Studios" loading="lazy">
+        </div>
+      </figure>
     </div>
   </section>
 
