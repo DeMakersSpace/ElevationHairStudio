@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop — Elevation Hair Studios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+
+  <!--
+  ═══════════════════════════════════════════════════════════
+   WIX INTEGRATION NOTES
+  ═══════════════════════════════════════════════════════════
+  This page is designed to connect with Wix Stores / Velo.
+  Key hooks:
+  · Each .product-card has data-product-id, data-category, data-price
+  · Add to Cart buttons have class="add-to-cart-btn" + data-product-id
+  · Filter buttons have data-filter attribute
+  · The product grid has id="product-grid"
+  · The featured product has id="featured-product"
+  · Cart count badge: id="cart-count"
+  · Cart icon button: id="cart-btn"
+  · Toast notification: id="cart-toast"
+
+  In Wix Velo:
+  1. Replace static product data with $w('#productRepeater').data = wixData
+  2. Bind add-to-cart-btn click → wixStores.cart.addToCart(productId, 1)
+  3. Bind filter buttons → filter product repeater by category field
+  4. Replace placeholder <img> src with Wix product image URLs
+  5. Replace data-price with Wix product price fields
+  ═══════════════════════════════════════════════════════════
+  -->
+
+  <style>
+
+    /* ─────────────────────────────────────────────
+       HERO
+    ───────────────────────────────────────────── */
+    .shop-hero {
+      padding: 130px 48px 100px;
+      position: relative;
+      overflow: hidden;
+      min-height: 560px;
+      display: flex; align-items: flex-end;
+    }
+    .shop-hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+    }
+    .shop-hero-bg img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+    .shop-hero-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(13,11,9,0.2) 0%, rgba(13,11,9,0.55) 55%, rgba(13,11,9,0.88) 100%),
+        linear-gradient(to right, rgba(13,11,9,0.5) 0%, transparent 65%);
+    }
+    .shop-hero-inner {
+      max-width: 1160px; margin: 0 auto; width: 100%;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 48px;
+      position: relative; z-index: 1;
+    }
+    .shop-hero-left { flex: 1; }
+    .hero-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--wood-lite); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: inline-block;
+      width: 28px; height: 1px; background: var(--wood-lite);
+    }
+    .shop-hero-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(52px, 6vw, 84px);
+      font-weight: 300; line-height: 0.95;
+      letter-spacing: -0.02em; color: var(--white);
+    }
+    .shop-hero-heading em {
+      font-style: italic; color: var(--wood-lite);
+    }
+    .shop-hero-right {
+      flex-shrink: 0; max-width: 320px;
+      padding-bottom: 8px;
+    }
+    .shop-hero-desc {
+      font-size: 15px; font-weight: 300;
+      line-height: 1.82; color: rgba(245,242,238,0.72);
+      border-left: 2px solid rgba(196,149,106,0.45);
+      padding-left: 20px;
+    }
+    .shop-hero-meta {
+      display: flex; gap: 32px; margin-top: 32px;
+    }
+    .shop-hero-stat { }
+    .shop-hero-stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-weight: 300; color: var(--white);
+      line-height: 1;
+    }
+    .shop-hero-stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--stone); margin-top: 4px;
+    }
+
+    /* ─────────────────────────────────────────────
+       SHOP MAIN
+    ───────────────────────────────────────────── */
+    .shop-main {
+      background: #EDEBE6;
+      padding: 72px 48px 96px;
+    }
+    .shop-main-inner {
+      max-width: 1160px; margin: 0 auto;
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 52px; flex-wrap: wrap;
+    }
+    .filter-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--stone); margin-right: 8px;
+    }
+    /* WIX: Bind filter buttons with data-filter attribute to Wix product category query */
+    .filter-btn {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--stone);
+      background: transparent;
+      border: 1px solid rgba(180,140,100,0.25);
+      padding: 9px 20px;
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+    .filter-btn:hover {
+      color: var(--ink);
+      border-color: rgba(160,113,79,0.5);
+    }
+    .filter-btn.active {
+      background: var(--ink);
+      color: var(--white);
+      border-color: var(--ink);
+    }
+    .filter-btn:focus-visible {
+      outline: 2px solid var(--wood-lite);
+      outline-offset: 3px;
+    }
+
+    /* Product count */
+    .product-count {
+      margin-left: auto;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--stone);
+    }
+
+    /* Product grid */
+    /* WIX: Replace this static grid with a Wix Stores Product Widget or Velo Repeater */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    /* Product card */
+    /* WIX: Each card maps to one product; bind data-product-id to Wix product _id */
+    .product-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(92,61,34,0.06);
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+                  box-shadow 0.3s ease;
+      cursor: pointer;
+      display: flex; flex-direction: column;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(92,61,34,0.14);
+    }
+    .product-card.hidden { display: none; }
+
+    .product-img-wrap {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      background: #EDEBE6;
+    }
+    .product-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .product-card:hover .product-img-wrap img {
+      transform: scale(1.04);
+    }
+    .product-badge {
+      position: absolute; top: 16px; left: 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      background: var(--ink); color: var(--white);
+      padding: 5px 10px; z-index: 1;
+    }
+    .product-badge.badge-new { background: var(--wood-lite); color: var(--ink); }
+    .product-badge.badge-set { background: var(--wood-deep); color: var(--white); }
+
+    .product-body {
+      padding: 24px;
+      display: flex; flex-direction: column;
+      flex: 1;
+    }
+    .product-category {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--wood); margin-bottom: 8px;
+    }
+    .product-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 400;
+      color: var(--ink); line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    .product-tagline {
+      font-size: 13px; font-weight: 300;
+      color: var(--muted); line-height: 1.7;
+      margin-bottom: 20px; flex: 1;
+    }
+    .product-footer-row {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px;
+      margin-top: auto;
+    }
+    .product-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-weight: 400;
+      color: var(--ink);
+    }
+    /* WIX: class="add-to-cart-btn" is the hook; bind to wixStores.cart.addToCart() */
+    .add-to-cart-btn {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--ink);
+      background: var(--wood-lite);
+      border: none; cursor: pointer;
+      padding: 10px 20px;
+      transition: background 0.2s ease, transform 0.15s ease;
+      flex-shrink: 0;
+    }
+    .add-to-cart-btn:hover {
+      background: var(--wood);
+      transform: translateY(-1px);
+    }
+    .add-to-cart-btn:active { transform: translateY(0); }
+    .add-to-cart-btn:focus-visible {
+      outline: 2px solid var(--wood-lite);
+      outline-offset: 3px;
+    }
+    .add-to-cart-btn.added {
+      background: var(--wood-deep);
+      color: var(--white);
+    }
+
+    /* Product details link */
+    .product-details-link {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--stone); text-decoration: none;
+      margin-top: 12px;
+      transition: color 0.2s ease;
+    }
+    .product-details-link:hover { color: var(--wood); }
+
+    /* ─────────────────────────────────────────────
+       FEATURED PRODUCT (EDITORIAL)
+    ───────────────────────────────────────────── */
+    .featured-section {
+      background: var(--ink);
+      padding: 0;
+      overflow: hidden;
+    }
+    .featured-inner {
+      max-width: 1160px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 560px;
+    }
+    .featured-img-col {
+      position: relative; overflow: hidden;
+    }
+    .featured-img-col img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+    .featured-section:hover .featured-img-col img {
+      transform: scale(1.03);
+    }
+    .featured-img-col::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, transparent 60%, var(--ink) 100%);
+      pointer-events: none;
+    }
+    .featured-content-col {
+      padding: 72px 56px;
+      display: flex; flex-direction: column; justify-content: center;
+      position: relative; z-index: 1;
+    }
+    .featured-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--wood); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .featured-eyebrow::before {
+      content: ''; display: inline-block;
+      width: 28px; height: 1px; background: var(--wood);
+    }
+    .featured-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 4vw, 54px);
+      font-weight: 300; line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--white); margin-bottom: 8px;
+    }
+    .featured-heading em {
+      font-style: italic; color: var(--wood-lite);
+    }
+    .featured-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px; font-style: italic; font-weight: 300;
+      color: rgba(245,242,238,0.55);
+      margin-bottom: 24px;
+    }
+    .featured-desc {
+      font-size: 14px; font-weight: 300;
+      line-height: 1.85; color: var(--stone);
+      max-width: 360px; margin-bottom: 36px;
+    }
+    .featured-price-row {
+      display: flex; align-items: center; gap: 24px;
+      margin-bottom: 32px;
+    }
+    .featured-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px; font-weight: 300;
+      color: var(--white);
+    }
+    .featured-volume {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.12em;
+      color: var(--stone);
+    }
+    .featured-actions {
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--ink); background: var(--wood-lite);
+      border: none; cursor: pointer;
+      padding: 15px 36px;
+      transition: background 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 4px 20px rgba(196,149,106,0.22);
+    }
+    .btn-primary:hover { background: var(--wood); transform: translateY(-2px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:focus-visible { outline: 2px solid var(--wood-lite); outline-offset: 3px; }
+    .btn-ghost {
+      display: inline-block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--fog);
+      background: none;
+      border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer;
+      padding: 14px 32px;
+      text-decoration: none;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    .btn-ghost:hover { color: var(--white); border-color: rgba(255,255,255,0.35); }
+    .btn-ghost:focus-visible { outline: 2px solid var(--wood-lite); outline-offset: 3px; }
+    .featured-tags {
+      display: flex; gap: 10px; margin-top: 28px; flex-wrap: wrap;
+    }
+    .featured-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid rgba(180,140,100,0.15);
+      padding: 5px 12px;
+    }
+
+    /* ─────────────────────────────────────────────
+       CTA BANNER
+    ───────────────────────────────────────────── */
+    .cta-section {
+      background: var(--ink);
+      padding: 96px 48px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .cta-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(160,113,79,0.09) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+    .cta-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--wood); margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+    }
+    .cta-eyebrow::before, .cta-eyebrow::after {
+      content: ''; display: inline-block; width: 32px; height: 1px; background: var(--wood);
+    }
+    .cta-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 5vw, 58px);
+      font-weight: 300; color: var(--white);
+      line-height: 1.1; letter-spacing: -0.02em;
+      margin-bottom: 40px;
+    }
+    .cta-heading em { font-style: italic; color: var(--wood-lite); }
+    .cta-actions {
+      display: flex; gap: 16px; align-items: center;
+      justify-content: center; flex-wrap: wrap;
+    }
+    .cta-or {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .cta-sub {
+      margin-top: 28px; font-size: 13px; font-weight: 300; color: var(--muted);
+    }
+    .cta-sub a { color: var(--stone); transition: color 0.2s ease; }
+    .cta-sub a:hover { color: var(--white); }
+
+    /* ─────────────────────────────────────────────
+       CART TOAST
+    ───────────────────────────────────────────── */
+    /* WIX: Replace toast with Wix's native cart sidebar or keep for custom behavior */
+    .cart-toast {
+      position: fixed; bottom: 32px; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--ink); color: var(--white);
+      padding: 14px 28px;
+      display: flex; align-items: center; gap: 12px;
+      z-index: 1000;
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+      pointer-events: none;
+      min-width: 240px;
+    }
+    .cart-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .cart-toast-icon {
+      width: 18px; height: 18px; flex-shrink: 0; color: var(--wood-lite);
+    }
+    .cart-toast-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+    }
+
+    /* Cart count badge in nav */
+    .nav-cart-wrap {
+      position: relative; display: inline-flex; align-items: center;
+    }
+    .nav-cart-count {
+      position: absolute; top: -6px; right: -8px;
+      background: var(--wood-lite); color: var(--ink);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; font-weight: 700;
+      min-width: 16px; height: 16px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 4px;
+      opacity: 0; transform: scale(0);
+      transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .nav-cart-count.visible {
+      opacity: 1; transform: scale(1);
+    }
+
+    /* ─────────────────────────────────────────────
+       RESPONSIVE
+    ───────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .shop-hero-inner { flex-direction: column; align-items: flex-start; gap: 32px; }
+      .shop-hero-right { max-width: 100%; }
+      .shop-hero { padding: 100px 32px 80px; min-height: 480px; }
+      .shop-main { padding: 56px 32px 80px; }
+      .featured-inner { grid-template-columns: 1fr 1fr; }
+      .product-grid { grid-template-columns: repeat(2, 1fr); }
+      .cta-section { padding: 72px 32px; }
+    }
+    @media (max-width: 768px) {
+      .nav { padding: 0 20px; height: 96px; }
+      .nav-links { display: none; }
+      .nav-actions { display: none; }
+      .nav-logo img { height: 78px; }
+      .shop-hero { padding: 80px 24px 56px; min-height: 400px; }
+      .shop-hero-heading { font-size: 44px; }
+      .shop-hero-meta { gap: 24px; }
+      .shop-main { padding: 48px 24px 64px; }
+      .filter-bar { gap: 6px; }
+      .filter-label { display: none; }
+      .product-count { display: none; }
+      .product-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .product-body { padding: 18px; }
+      .product-name { font-size: 18px; }
+      .featured-inner { grid-template-columns: 1fr; min-height: auto; }
+      .featured-img-col { aspect-ratio: 16/9; }
+      .featured-img-col::after { background: linear-gradient(to bottom, transparent 50%, var(--ink) 100%); }
+      .featured-content-col { padding: 40px 28px 48px; }
+      .cta-section { padding: 64px 24px; }
+      .float-book { bottom: 20px; right: 20px; }
+    }
+    @media (max-width: 480px) {
+      .product-grid { grid-template-columns: 1fr; gap: 14px; }
+      .shop-hero-heading { font-size: 38px; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="nav-logo" aria-label="Elevation Hair Studios – Home">
+    <img src="Brand Logo/Logo - EHS (without background).png" alt="Elevation Hair Studios">
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="product.html" class="active">Shop</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <!-- WIX: Replace cart button with Wix Stores native cart icon widget -->
+    <div class="nav-cart-wrap" style="margin-right:20px;">
+      <button id="cart-btn" type="button" aria-label="View cart"
+        style="background:none;border:none;cursor:pointer;display:flex;align-items:center;padding:6px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+      </button>
+      <span class="nav-cart-count" id="cart-count" aria-label="Cart items">0</span>
+    </div>
+    <a href="book.html" class="nav-book">Book Online</a>
+  </div>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<nav class="mobile-nav" id="mobileNav" role="dialog" aria-modal="true" aria-label="Site navigation">
+  <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">&times;</button>
+  <a href="index.html">Home</a>
+  <a href="services.html">Services</a>
+  <a href="about.html">About</a>
+  <a href="gallery.html">Gallery</a>
+  <a href="product.html" class="active">Shop</a>
+  <a href="contact.html">Contact</a>
+  <a href="book.html" class="mobile-nav-book">Book Online</a>
+</nav>
+
+<!-- HERO -->
+<section class="shop-hero" aria-labelledby="shop-hero-heading">
+  <div class="shop-hero-bg" aria-hidden="true">
+    <img src="Products/Productheropicture.jpg" alt="" loading="eager">
+  </div>
+  <div class="shop-hero-inner">
+    <div class="shop-hero-left">
+      <div class="hero-eyebrow">West Singapore · Precision Grooming</div>
+      <h1 class="shop-hero-heading" id="shop-hero-heading">
+        The<br><em>Edit.</em>
+      </h1>
+    </div>
+    <div class="shop-hero-right">
+      <p class="shop-hero-desc">
+        Curated grooming essentials — the same products our barbers trust,
+        now available for your daily routine.
+      </p>
+      <div class="shop-hero-meta">
+        <div class="shop-hero-stat">
+          <!-- WIX: Replace with dynamic product count from Wix Stores -->
+          <div class="shop-hero-stat-num">5</div>
+          <div class="shop-hero-stat-label">Products</div>
+        </div>
+        <div class="shop-hero-stat">
+          <div class="shop-hero-stat-num">1</div>
+          <div class="shop-hero-stat-label">Category</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Curated Essentials</span><span class="marquee-dot"> · </span>
+    <span>Barber Approved</span><span class="marquee-dot"> · </span>
+    <span>Hair &amp; Beard</span><span class="marquee-dot"> · </span>
+    <span>Precision Grooming</span><span class="marquee-dot"> · </span>
+    <span>Trusted In-Studio</span><span class="marquee-dot"> · </span>
+    <span>Curated Essentials</span><span class="marquee-dot"> · </span>
+    <span>Barber Approved</span><span class="marquee-dot"> · </span>
+    <span>Hair &amp; Beard</span><span class="marquee-dot"> · </span>
+    <span>Precision Grooming</span><span class="marquee-dot"> · </span>
+    <span>Trusted In-Studio</span><span class="marquee-dot"> · </span>
+  </div>
+</div>
+
+<!-- PRODUCT SHOP -->
+<section class="shop-main" aria-labelledby="shop-products-heading">
+  <div class="shop-main-inner">
+
+    <!-- Filter bar -->
+    <!-- WIX: Bind each button's data-filter to Wix product collection categories -->
+    <div class="filter-bar" role="group" aria-label="Filter products by category">
+      <span class="filter-label">Filter</span>
+      <button class="filter-btn active" data-filter="all" type="button">All</button>
+      <button class="filter-btn" data-filter="hair" type="button">Hair</button>
+      <button class="filter-btn" data-filter="beard" type="button">Beard</button>
+      <button class="filter-btn" data-filter="scalp" type="button">Scalp</button>
+      <button class="filter-btn" data-filter="set" type="button">Sets</button>
+      <span class="product-count" id="product-count" aria-live="polite">5 products</span>
+    </div>
+
+    <!-- Product grid -->
+    <!-- WIX: Replace with Wix Stores Product Grid widget or Velo Repeater bound to Products collection -->
+    <h2 id="shop-products-heading" class="sr-only">Our Products</h2>
+    <div class="product-grid" id="product-grid" role="list">
+
+      <!-- Product 1 — Matte Styling Paste -->
+      <!-- WIX: data-product-id → Wix product _id; replace img src with Wix product mainMedia URL -->
+      <article class="product-card reveal reveal-delay-1"
+        role="listitem"
+        data-category="hair"
+        data-product-id="matte-styling-paste"
+        data-price="0">
+        <div class="product-img-wrap">
+          <img src="Products/MatteStylingPaste.png" alt="Matte Styling Paste product" loading="lazy">
+        </div>
+        <div class="product-body">
+          <div class="product-category">Hair</div>
+          <h3 class="product-name">Matte Styling Paste</h3>
+          <p class="product-tagline">Strong hold, matte finish. Shapes and defines with a natural, clean look.</p>
+          <div class="product-footer-row">
+            <span class="product-price">$???</span>
+            <!-- WIX: Bind click → wixStores.cart.addToCart('matte-styling-paste', 1) -->
+            <button class="add-to-cart-btn"
+              data-product-id="matte-styling-paste"
+              data-product-name="Matte Styling Paste"
+              type="button"
+              aria-label="Add Matte Styling Paste to cart">
+              Add to Cart
+            </button>
+          </div>
+          <!-- WIX: href → Wix product page URL -->
+          <a href="#" class="product-details-link" aria-label="View Matte Styling Paste details">View Details →</a>
+        </div>
+      </article>
+
+      <!-- Product 2 — Fiber Cream -->
+      <article class="product-card reveal reveal-delay-2"
+        role="listitem"
+        data-category="hair"
+        data-product-id="fiber-cream"
+        data-price="0">
+        <div class="product-img-wrap">
+          <img src="Products/FiberCream.png" alt="Fiber Cream product" loading="lazy">
+        </div>
+        <div class="product-body">
+          <div class="product-category">Hair</div>
+          <h3 class="product-name">Fiber Cream</h3>
+          <p class="product-tagline">Flexible hold with a natural finish. Adds texture and control without stiffness.</p>
+          <div class="product-footer-row">
+            <span class="product-price">$???</span>
+            <button class="add-to-cart-btn"
+              data-product-id="fiber-cream"
+              data-product-name="Fiber Cream"
+              type="button"
+              aria-label="Add Fiber Cream to cart">
+              Add to Cart
+            </button>
+          </div>
+          <a href="#" class="product-details-link" aria-label="View Fiber Cream details">View Details →</a>
+        </div>
+      </article>
+
+      <!-- Product 3 — Fiber Gel -->
+      <article class="product-card reveal reveal-delay-3"
+        role="listitem"
+        data-category="hair"
+        data-product-id="fiber-gel"
+        data-price="0">
+        <div class="product-img-wrap">
+          <img src="Products/FiberGel.png" alt="Fiber Gel product" loading="lazy">
+        </div>
+        <div class="product-body">
+          <div class="product-category">Hair</div>
+          <h3 class="product-name">Fiber Gel</h3>
+          <p class="product-tagline">Firm hold with lasting definition. Keeps your style in place all day.</p>
+          <div class="product-footer-row">
+            <span class="product-price">$???</span>
+            <button class="add-to-cart-btn"
+              data-product-id="fiber-gel"
+              data-product-name="Fiber Gel"
+              type="button"
+              aria-label="Add Fiber Gel to cart">
+              Add to Cart
+            </button>
+          </div>
+          <a href="#" class="product-details-link" aria-label="View Fiber Gel details">View Details →</a>
+        </div>
+      </article>
+
+      <!-- Product 4 — Slick Gorilla Styling Powder -->
+      <article class="product-card reveal reveal-delay-1"
+        role="listitem"
+        data-category="hair"
+        data-product-id="slick-gorilla-powder"
+        data-price="0">
+        <div class="product-img-wrap">
+          <img src="Products/slickgorillahairstylingpowder.png" alt="Slick Gorilla Hair Styling Powder product" loading="lazy">
+        </div>
+        <div class="product-body">
+          <div class="product-category">Hair</div>
+          <h3 class="product-name">Slick Gorilla Styling Powder</h3>
+          <p class="product-tagline">Volumising powder for instant texture and lift. Mess-free, shake-and-go application.</p>
+          <div class="product-footer-row">
+            <span class="product-price">$???</span>
+            <button class="add-to-cart-btn"
+              data-product-id="slick-gorilla-powder"
+              data-product-name="Slick Gorilla Styling Powder"
+              type="button"
+              aria-label="Add Slick Gorilla Styling Powder to cart">
+              Add to Cart
+            </button>
+          </div>
+          <a href="#" class="product-details-link" aria-label="View Slick Gorilla Styling Powder details">View Details →</a>
+        </div>
+      </article>
+
+      <!-- Product 5 — Bareborn -->
+      <article class="product-card reveal reveal-delay-2"
+        role="listitem"
+        data-category="hair"
+        data-product-id="bareborn"
+        data-price="0">
+        <div class="product-img-wrap">
+          <img src="Products/Bareborn.png" alt="Bareborn product" loading="lazy">
+        </div>
+        <div class="product-body">
+          <div class="product-category">Hair</div>
+          <h3 class="product-name">Bareborn</h3>
+          <p class="product-tagline">Premium grooming essentials for the modern man. Clean ingredients, reliable results.</p>
+          <div class="product-footer-row">
+            <span class="product-price">$???</span>
+            <button class="add-to-cart-btn"
+              data-product-id="bareborn"
+              data-product-name="Bareborn"
+              type="button"
+              aria-label="Add Bareborn to cart">
+              Add to Cart
+            </button>
+          </div>
+          <a href="#" class="product-details-link" aria-label="View Bareborn details">View Details →</a>
+        </div>
+      </article>
+
+    </div><!-- /product-grid -->
+  </div><!-- /shop-main-inner -->
+</section><!-- /shop-main -->
+
+<!-- FEATURED PRODUCT — EDITORIAL -->
+<!-- WIX: Replace with Wix "Featured Product" widget bound to a pinned/featured product -->
+<section class="featured-section reveal" id="featured-product" aria-labelledby="featured-heading">
+  <div class="featured-inner">
+    <div class="featured-img-col">
+      <!-- WIX: Replace src with Wix featured product mainMedia URL -->
+      <img src="Products/MatteStylingPaste.png" alt="Matte Styling Paste - featured product" loading="lazy">
+    </div>
+    <div class="featured-content-col">
+      <div class="featured-eyebrow">Editor's Pick</div>
+      <h2 class="featured-heading" id="featured-heading">
+        Matte Styling<br><em>Paste.</em>
+      </h2>
+      <p class="featured-sub">The everyday essential, perfected.</p>
+      <p class="featured-desc">
+        The go-to styling product trusted in-studio every day.
+        Strong hold, zero shine — shapes and defines without
+        the weight. Works on all hair types.
+      </p>
+      <div class="featured-price-row">
+        <!-- WIX: Replace with Wix product price field -->
+        <span class="featured-price">$???</span>
+        <span class="featured-volume">Barber approved</span>
+      </div>
+      <div class="featured-actions">
+        <!-- WIX: Bind to wixStores.cart.addToCart('matte-styling-paste', 1) -->
+        <button class="btn-primary add-to-cart-btn"
+          data-product-id="matte-styling-paste"
+          data-product-name="Matte Styling Paste"
+          type="button"
+          aria-label="Add Matte Styling Paste to cart">
+          Add to Cart
+        </button>
+        <!-- WIX: href → /shop/matte-styling-paste (Wix dynamic product page) -->
+        <a href="#" class="btn-ghost">View Details</a>
+      </div>
+      <div class="featured-tags">
+        <span class="featured-tag">Strong Hold</span>
+        <span class="featured-tag">Matte Finish</span>
+        <span class="featured-tag">All Hair Types</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CARE & DELIVERY STRIP -->
+<!-- CTA -->
+<section class="cta-section" aria-labelledby="cta-heading">
+  <div class="cta-inner">
+    <div class="cta-eyebrow">Ready for the Chair</div>
+    <h2 class="cta-heading" id="cta-heading">Pair the Products With the <em>Cut.</em></h2>
+    <div class="cta-actions">
+      <a href="book.html" class="btn-primary">Book Appointment</a>
+      <span class="cta-or">or</span>
+      <a href="https://wa.me/6588155167" target="_blank" rel="noopener" class="btn-ghost">WhatsApp Us</a>
+    </div>
+    <p class="cta-sub">or call <a href="tel:88155167">8815 5167</a></p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer" role="contentinfo">
+  <div class="footer-grid">
+    <div>
+      <img src="Brand Logo/Logo - EHS (without background).png" alt="Elevation Hair Studios" class="footer-logo" loading="lazy">
+      <p class="footer-desc">Premium cuts and precise grooming in the heart of West Singapore. Your barber, your community.</p>
+    </div>
+    <div class="footer-cols-wrap">
+      <div class="footer-col">
+        <div class="footer-col-title">Navigation</div>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="product.html">Shop</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="book.html">Book Online</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Contact</div>
+        <ul>
+          <li><a href="tel:88155167">8815 5167</a></li>
+          <li><a href="mailto:ElevationHairstudios@gmail.com">ElevationHairstudios@gmail.com</a></li>
+          <li><a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Visit Us</div>
+        <ul>
+          <li><a href="contact.html">68 Jln Jurong Kechil</a></li>
+          <li><a href="contact.html">#01-16, Singapore 596180</a></li>
+          <li><a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">&copy; 2026 Elevation Hair Studios Pte. Ltd. &nbsp;(202531488E)</span>
+    <div class="footer-social">
+      <a href="https://www.instagram.com/lev.blendz/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.tiktok.com/discover/levblendz" target="_blank" rel="noopener">TikTok</a>
+      <a href="https://wa.me/6588155167" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+  <div style="border-top:1px solid var(--border); padding-top:16px; margin-top:16px; text-align:center;">
+    <div style="max-width:1160px; margin:0 auto;">
+      <span style="font-family:'Barlow',sans-serif; font-size:11px; color:var(--muted); opacity:0.6; letter-spacing:0.06em;">
+        Website Design by <a href="https://www.instagram.com/de.makers.space/" target="_blank" rel="noopener"
+          style="color:var(--wood-lite); opacity:1; transition:color 0.2s ease;"
+          onmouseover="this.style.color='var(--wood)'"
+          onmouseout="this.style.color='var(--wood-lite)'">De Makers Space</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- FLOATING BUTTONS -->
+<a href="https://wa.me/6588155167" target="_blank" rel="noopener" class="float-wa" id="floatWa" aria-label="Chat with us on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+  </svg>
+</a>
+<a href="book.html" class="float-book" id="floatBook">Book Now</a>
+
+<!-- CART TOAST NOTIFICATION -->
+<!-- WIX: Replace with Wix Stores native cart sidebar open trigger -->
+<div class="cart-toast" id="cart-toast" role="status" aria-live="polite" aria-atomic="true">
+  <svg class="cart-toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+  <span class="cart-toast-text" id="cart-toast-text">Added to cart</span>
+</div>
+
+<!-- Screen reader only utility -->
+<style>
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+</style>
+
+<script src="shared.js"></script>
+<script>
+/*
+ ═══════════════════════════════════════════════════════
+  PRODUCT PAGE — CLIENT-SIDE LOGIC
+  WIX MIGRATION: Replace the cart & filter logic below
+  with Wix Velo event handlers and Wix Stores API calls.
+ ═══════════════════════════════════════════════════════
+*/
+
+(function () {
+  'use strict';
+
+  // ── Cart state (WIX: replace with wixStores.cart API) ──
+  var cartCount = 0;
+  var toastTimer = null;
+  var cartCountEl = document.getElementById('cart-count');
+  var toastEl = document.getElementById('cart-toast');
+  var toastTextEl = document.getElementById('cart-toast-text');
+
+  function updateCartBadge() {
+    cartCountEl.textContent = cartCount;
+    cartCountEl.classList.toggle('visible', cartCount > 0);
+  }
+
+  function showToast(productName) {
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTextEl.textContent = '\u201C' + productName + '\u201D added to cart';
+    toastEl.classList.add('show');
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove('show');
+    }, 3000);
+  }
+
+  /*
+   WIX: Replace this function body with:
+     wixStores.cart.addToCart(productId, 1)
+       .then(() => { wixStores.cart.openSideCart(); })
+       .catch(err => console.error(err));
+  */
+  function addToCart(btn) {
+    var productId = btn.getAttribute('data-product-id');
+    var productName = btn.getAttribute('data-product-name');
+    cartCount += 1;
+    updateCartBadge();
+    showToast(productName);
+
+    // Visual feedback on button
+    var originalText = btn.textContent;
+    btn.textContent = 'Added';
+    btn.classList.add('added');
+    btn.disabled = true;
+    setTimeout(function () {
+      btn.textContent = originalText;
+      btn.classList.remove('added');
+      btn.disabled = false;
+    }, 2000);
+  }
+
+  // Bind all add-to-cart buttons
+  document.querySelectorAll('.add-to-cart-btn').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      addToCart(btn);
+    });
+  });
+
+  // Cart icon opens sidebar (WIX: replace with wixStores.cart.openSideCart())
+  var cartBtn = document.getElementById('cart-btn');
+  if (cartBtn) {
+    cartBtn.addEventListener('click', function () {
+      if (cartCount > 0) showToast('Your cart has ' + cartCount + ' item' + (cartCount > 1 ? 's' : ''));
+    });
+  }
+
+  // ── Product filter ──
+  /*
+   WIX: Replace this filter logic with a Wix Stores repeater filter:
+     $w('#productRepeater').setFilter(
+       wixData.filter().eq('category', selectedCategory)
+     );
+  */
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  var productCards = document.querySelectorAll('.product-card');
+  var productCountEl = document.getElementById('product-count');
+
+  function updateProductCount(visible) {
+    productCountEl.textContent = visible + ' product' + (visible !== 1 ? 's' : '');
+  }
+
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var filter = btn.getAttribute('data-filter');
+
+      // Update active state
+      filterBtns.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      // Filter cards
+      var visible = 0;
+      productCards.forEach(function (card) {
+        var category = card.getAttribute('data-category');
+        var show = filter === 'all' || category === filter;
+        card.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+
+      updateProductCount(visible);
+    });
+  });
+
+  // ── Floating buttons (scroll trigger) ──
+  var fb = document.getElementById('floatBook');
+  var fw = document.getElementById('floatWa');
+  window.addEventListener('scroll', function () {
+    var show = window.scrollY > 300;
+    fb.classList.toggle('show', show);
+    fw.classList.toggle('show', show);
+  }, { passive: true });
+
+})();
+</script>
+
+</body>
+</html>
