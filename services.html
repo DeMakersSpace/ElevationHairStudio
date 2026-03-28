@@ -151,9 +151,12 @@
     .overlay-book-btn {
       display: inline-block; flex-shrink: 0;
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px; font-weight: 600;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--ink); background: var(--wood-lite);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: #ffffff; background: var(--wood);
+      text-shadow: 0 0 6px rgba(0,0,0,0.85), 0 2px 14px rgba(0,0,0,0.65);
+      border: 1px solid rgba(200,200,200,0.2);
+      border-radius: 4px;
       padding: 11px 22px; white-space: nowrap;
     }
     @media (prefers-reduced-motion: reduce) {
@@ -187,14 +190,17 @@
     .service-book-btn {
       display: inline-block; flex-shrink: 0;
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px; font-weight: 600;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--ink); background: var(--wood-lite);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: #ffffff; background: var(--wood);
+      text-shadow: 0 0 6px rgba(0,0,0,0.85), 0 2px 14px rgba(0,0,0,0.65);
+      border: 1px solid rgba(200,200,200,0.2);
+      border-radius: 4px;
       padding: 11px 22px;
       transition: background 0.2s ease, transform 0.2s ease;
       white-space: nowrap;
     }
-    .service-book-btn:hover { background: var(--wood); transform: translateY(-1px); }
+    .service-book-btn:hover { background: var(--wood-deep); transform: translateY(-1px); }
     .service-book-btn:active { transform: translateY(0); }
     .service-book-btn:focus-visible { outline: 2px solid var(--wood-lite); outline-offset: 3px; }
 
@@ -372,12 +378,15 @@
     .cta-actions { display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
     .btn-primary {
       display: inline-block; font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--ink); background: var(--wood-lite); padding: 16px 40px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+      color: #ffffff; background: var(--wood); padding: 16px 40px;
+      text-shadow: 0 0 6px rgba(0,0,0,0.85), 0 2px 14px rgba(0,0,0,0.65);
+      border: 1px solid rgba(200,200,200,0.2);
+      border-radius: 4px;
       transition: background 0.2s ease, transform 0.2s ease;
       box-shadow: 0 4px 20px rgba(196,149,106,0.25);
     }
-    .btn-primary:hover { background: var(--wood); transform: translateY(-2px); }
+    .btn-primary:hover { background: var(--wood-deep); transform: translateY(-2px); }
     .btn-primary:active { transform: translateY(0); }
     .btn-primary:focus-visible { outline: 2px solid var(--wood-lite); outline-offset: 3px; }
     .cta-or {

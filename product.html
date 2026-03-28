@@ -257,17 +257,20 @@
     /* WIX: class="add-to-cart-btn" is the hook; bind to wixStores.cart.addToCart() */
     .add-to-cart-btn {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px; font-weight: 600;
-      letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--ink);
-      background: var(--wood-lite);
-      border: none; cursor: pointer;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 0 0 6px rgba(0,0,0,0.85), 0 2px 14px rgba(0,0,0,0.65);
+      background: var(--wood);
+      border: 1px solid rgba(200,200,200,0.2);
+      border-radius: 4px;
+      cursor: pointer;
       padding: 10px 20px;
       transition: background 0.2s ease, transform 0.15s ease;
       flex-shrink: 0;
     }
     .add-to-cart-btn:hover {
-      background: var(--wood);
+      background: var(--wood-deep);
       transform: translateY(-1px);
     }
     .add-to-cart-btn:active { transform: translateY(0); }
@@ -277,7 +280,7 @@
     }
     .add-to-cart-btn.added {
       background: var(--wood-deep);
-      color: var(--white);
+      color: #ffffff;
     }
 
     /* Product details link */
@@ -383,15 +386,18 @@
     .btn-primary {
       display: inline-block;
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--ink); background: var(--wood-lite);
-      border: none; cursor: pointer;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: #ffffff; background: var(--wood);
+      text-shadow: 0 0 6px rgba(0,0,0,0.85), 0 2px 14px rgba(0,0,0,0.65);
+      border: 1px solid rgba(200,200,200,0.2);
+      border-radius: 4px;
+      cursor: pointer;
       padding: 15px 36px;
       transition: background 0.2s ease, transform 0.2s ease;
       box-shadow: 0 4px 20px rgba(196,149,106,0.22);
     }
-    .btn-primary:hover { background: var(--wood); transform: translateY(-2px); }
+    .btn-primary:hover { background: var(--wood-deep); transform: translateY(-2px); }
     .btn-primary:active { transform: translateY(0); }
     .btn-primary:focus-visible { outline: 2px solid var(--wood-lite); outline-offset: 3px; }
     .btn-ghost {
